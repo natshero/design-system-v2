@@ -1,0 +1,335 @@
+/* 
+  RankMyApp Design System - Themes
+  Mapping legacy tokens to Shadcn variables
+*/
+
+/* ==========================================================
+   PORTAL (Home)
+   ========================================================== */
+html[data-theme="portal"] {
+  --background: #F5F7FA;
+  --foreground: #0D0D0D;
+  --card: #FFFFFF;
+  --card-foreground: #0D0D0D;
+  --popover: #FFFFFF;
+  --popover-foreground: #0D0D0D;
+  --primary: #1A88FF;
+  --primary-foreground: #FFFFFF;
+  --secondary: #6B7280;
+  --secondary-foreground: #FFFFFF;
+  --muted: #E5E7EB;
+  --muted-foreground: #9CA3AF;
+  --accent: #1A88FF;
+  --accent-foreground: #FFFFFF;
+  --destructive: #E24B4A;
+  --destructive-foreground: #FFFFFF;
+  --border: rgba(0,0,0,0.08);
+  --input: rgba(0,0,0,0.15);
+  --ring: #1A88FF;
+  --radius: 1rem;
+}
+
+html[data-theme="portal"].dark {
+  --background: #0D1117;
+  --foreground: #F0F6FC;
+  --card: #161B22;
+  --card-foreground: #F0F6FC;
+  --popover: #161B22;
+  --popover-foreground: #F0F6FC;
+  --primary: #00A3FF;
+  --primary-foreground: #FFFFFF;
+  --secondary: #8B949E;
+  --secondary-foreground: #FFFFFF;
+  --muted: #21262D;
+  --muted-foreground: #6B7280;
+  --accent: #00A3FF;
+  --accent-foreground: #FFFFFF;
+  --destructive: #E24B4A;
+  --destructive-foreground: #FFFFFF;
+  --border: rgba(255,255,255,0.08);
+  --input: rgba(255,255,255,0.15);
+  --ring: #00A3FF;
+}
+
+/* ==========================================================
+   MI-TOOL
+   ========================================================== */
+html[data-theme="mi-tool"] {
+  --background: #FFFFFF;
+  --foreground: #0D0D1A;
+  --card: #F4F4FF;
+  --card-foreground: #0D0D1A;
+  --popover: #EAEAF8;
+  --popover-foreground: #0D0D1A;
+  --primary: #1A88FF;
+  --primary-foreground: #FFFFFF;
+  --secondary: #07C6C3;
+  --secondary-foreground: #FFFFFF;
+  --muted: #EAEAF8;
+  --muted-foreground: #9090B0;
+  --accent: #FF0167;
+  --accent-foreground: #FFFFFF;
+  --destructive: #E24B4A;
+  --destructive-foreground: #FFFFFF;
+  --border: rgba(0, 0, 0, 0.08);
+  --input: rgba(0, 0, 0, 0.16);
+  --ring: #1A88FF;
+  --radius: 0.5rem;
+}
+
+html[data-theme="mi-tool"].dark {
+  --background: #0A0A10;
+  --foreground: #F0F6FC;
+  --card: #111119;
+  --card-foreground: #F0F6FC;
+  --popover: #1A1A26;
+  --popover-foreground: #F0F6FC;
+  --primary: #1A88FF;
+  --primary-foreground: #FFFFFF;
+  --secondary: #07C6C3;
+  --secondary-foreground: #FFFFFF;
+  --muted: #1A1A26;
+  --muted-foreground: rgba(255, 255, 255, 0.6);
+  --accent: #FF0167;
+  --accent-foreground: #FFFFFF;
+  --destructive: #E24B4A;
+  --destructive-foreground: #FFFFFF;
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.15);
+  --ring: #1A88FF;
+}
+
+/* ==========================================================
+   DATARANK
+   ========================================================== */
+html[data-theme="datarank"] {
+  --background: #FFFFFF;
+  --foreground: #0D0D1A;
+  --card: #F4F4FF;
+  --card-foreground: #0D0D1A;
+  --popover: #EAEAF8;
+  --popover-foreground: #0D0D1A;
+  --primary: #8243FF;
+  --primary-foreground: #FFFFFF;
+  --secondary: #07C6C3;
+  --secondary-foreground: #FFFFFF;
+  --muted: #EAEAF8;
+  --muted-foreground: #9090B0;
+  --accent: #FF0167;
+  --accent-foreground: #FFFFFF;
+  --destructive: #E24B4A;
+  --destructive-foreground: #FFFFFF;
+  --border: rgba(0, 0, 0, 0.08);
+  --input: rgba(0, 0, 0, 0.16);
+  --ring: #8243FF;
+  --radius: 0.5rem;
+}
+
+html[data-theme="datarank"].dark {
+  --background: #0A0A10;
+  --foreground: #F0F6FC;
+  --card: #111119;
+  --card-foreground: #F0F6FC;
+  --popover: #1A1A26;
+  --popover-foreground: #F0F6FC;
+  --primary: #8243FF;
+  --primary-foreground: #FFFFFF;
+  --secondary: #07C6C3;
+  --secondary-foreground: #FFFFFF;
+  --muted: #1A1A26;
+  --muted-foreground: rgba(255, 255, 255, 0.6);
+  --accent: #FF0167;
+  --accent-foreground: #FFFFFF;
+  --destructive: #E24B4A;
+  --destructive-foreground: #FFFFFF;
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.15);
+  --ring: #8243FF;
+}
+
+/* ==========================================================
+   ADS INTELLIGENCE
+   ========================================================== */
+html[data-theme="ads-intelligence"] {
+  --background: #FFFFFF;
+  --foreground: #0D0D1A;
+  --card: #F4F4FF;
+  --card-foreground: #0D0D1A;
+  --popover: #EAEAF8;
+  --popover-foreground: #0D0D1A;
+  --primary: #5667EA;
+  --primary-foreground: #FFFFFF;
+  --secondary: #07C6C3;
+  --secondary-foreground: #FFFFFF;
+  --muted: #EAEAF8;
+  --muted-foreground: #9090B0;
+  --accent: #FF0167;
+  --accent-foreground: #FFFFFF;
+  --destructive: #E24B4A;
+  --destructive-foreground: #FFFFFF;
+  --border: rgba(0, 0, 0, 0.08);
+  --input: rgba(0, 0, 0, 0.16);
+  --ring: #5667EA;
+  --radius: 0.5rem;
+}
+
+html[data-theme="ads-intelligence"].dark {
+  --background: #0A0A10;
+  --foreground: #F0F6FC;
+  --card: #111119;
+  --card-foreground: #F0F6FC;
+  --popover: #1A1A26;
+  --popover-foreground: #F0F6FC;
+  --primary: #5667EA;
+  --primary-foreground: #FFFFFF;
+  --secondary: #07C6C3;
+  --secondary-foreground: #FFFFFF;
+  --muted: #1A1A26;
+  --muted-foreground: rgba(255, 255, 255, 0.6);
+  --accent: #FF0167;
+  --accent-foreground: #FFFFFF;
+  --destructive: #E24B4A;
+  --destructive-foreground: #FFFFFF;
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.15);
+  --ring: #5667EA;
+}
+
+/* ==========================================================
+   RANKMYGEO
+   ========================================================== */
+html[data-theme="rankmygeo"] {
+  --background: #FFFFFF;
+  --foreground: #0D0D1A;
+  --card: #F4F4FF;
+  --card-foreground: #0D0D1A;
+  --popover: #EAEAF8;
+  --popover-foreground: #0D0D1A;
+  --primary: #00A884;
+  --primary-foreground: #FFFFFF;
+  --secondary: #1A88FF;
+  --secondary-foreground: #FFFFFF;
+  --muted: #EAEAF8;
+  --muted-foreground: #9090B0;
+  --accent: #FF0167;
+  --accent-foreground: #FFFFFF;
+  --destructive: #E24B4A;
+  --destructive-foreground: #FFFFFF;
+  --border: rgba(0, 0, 0, 0.08);
+  --input: rgba(0, 0, 0, 0.16);
+  --ring: #00A884;
+  --radius: 0.5rem;
+}
+
+html[data-theme="rankmygeo"].dark {
+  --background: #0A0A10;
+  --foreground: #F0F6FC;
+  --card: #111119;
+  --card-foreground: #F0F6FC;
+  --popover: #1A1A26;
+  --popover-foreground: #F0F6FC;
+  --primary: #00A884;
+  --primary-foreground: #FFFFFF;
+  --secondary: #1A88FF;
+  --secondary-foreground: #FFFFFF;
+  --muted: #1A1A26;
+  --muted-foreground: rgba(255, 255, 255, 0.6);
+  --accent: #FF0167;
+  --accent-foreground: #FFFFFF;
+  --destructive: #E24B4A;
+  --destructive-foreground: #FFFFFF;
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.15);
+  --ring: #00A884;
+}
+
+/* ==========================================================
+   RANK COMMUNITY
+   ========================================================== */
+html[data-theme="rankcommunity"] {
+  --background: #FFFFFF;
+  --foreground: #0D0D1A;
+  --card: #F4F4FF;
+  --card-foreground: #0D0D1A;
+  --popover: #EAEAF8;
+  --popover-foreground: #0D0D1A;
+  --primary: #7C3AED;
+  --primary-foreground: #FFFFFF;
+  --secondary: #07C6C3;
+  --secondary-foreground: #FFFFFF;
+  --muted: #EAEAF8;
+  --muted-foreground: #9090B0;
+  --accent: #FF0167;
+  --accent-foreground: #FFFFFF;
+  --destructive: #E24B4A;
+  --destructive-foreground: #FFFFFF;
+  --border: rgba(0, 0, 0, 0.08);
+  --input: rgba(0, 0, 0, 0.16);
+  --ring: #7C3AED;
+  --radius: 0.5rem;
+}
+
+html[data-theme="rankcommunity"].dark {
+  --background: #0A0A10;
+  --foreground: #F0F6FC;
+  --card: #111119;
+  --card-foreground: #F0F6FC;
+  --popover: #1A1A26;
+  --popover-foreground: #F0F6FC;
+  --primary: #7C3AED;
+  --primary-foreground: #FFFFFF;
+  --secondary: #07C6C3;
+  --secondary-foreground: #FFFFFF;
+  --muted: #1A1A26;
+  --muted-foreground: rgba(255, 255, 255, 0.6);
+  --accent: #FF0167;
+  --accent-foreground: #FFFFFF;
+  --destructive: #E24B4A;
+  --destructive-foreground: #FFFFFF;
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.15);
+  --ring: #7C3AED;
+}
+
+/* ==========================================================
+   CHART TOKENS
+   ========================================================== */
+html {
+  --chart-1: #1A88FF;
+  --chart-2: #07C6C3;
+  --chart-3: #FF0167;
+  --chart-4: #FF5700;
+  --chart-5: #00D9FF;
+}
+
+html[data-theme="datarank"], html[data-theme="datarank"].dark {
+  --chart-1: #8243FF;
+  --chart-2: #07C6C3;
+  --chart-3: #FF0167;
+  --chart-4: #FF5700;
+  --chart-5: #00D9FF;
+}
+
+html[data-theme="ads-intelligence"], html[data-theme="ads-intelligence"].dark {
+  --chart-1: #5667EA;
+  --chart-2: #07C6C3;
+  --chart-3: #FF0167;
+  --chart-4: #FF5700;
+  --chart-5: #00D9FF;
+}
+
+html[data-theme="rankmygeo"], html[data-theme="rankmygeo"].dark {
+  --chart-1: #00A884;
+  --chart-2: #1A88FF;
+  --chart-3: #FF0167;
+  --chart-4: #FF5700;
+  --chart-5: #00D9FF;
+}
+
+html[data-theme="rankcommunity"], html[data-theme="rankcommunity"].dark {
+  --chart-1: #7C3AED;
+  --chart-2: #07C6C3;
+  --chart-3: #FF0167;
+  --chart-4: #FF5700;
+  --chart-5: #00D9FF;
+}
