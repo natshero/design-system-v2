@@ -24,9 +24,9 @@ const navGroups = [
   {
     title: 'GETTING STARTED',
     items: [
-      { id: 'instalacao',  label: 'Instalação' },
+      { id: 'instalacao',   label: 'Instalação' },
       { id: 'configuracao', label: 'Configuração' },
-      { id: 'uso-basico',  label: 'Uso Básico' }
+      { id: 'uso-basico',   label: 'Uso Básico' }
     ]
   },
   {
@@ -48,10 +48,21 @@ const navGroups = [
         items: [
           { id: 'button',          label: 'Button' },
           { id: 'input',           label: 'Input' },
+          { id: 'textarea',        label: 'Textarea' },
           { id: 'select',          label: 'Select' },
+          { id: 'native-select',   label: 'NativeSelect' },
+          { id: 'combobox',        label: 'Combobox' },
+          { id: 'radio-group',     label: 'RadioGroup' },
           { id: 'checkbox',        label: 'Checkbox' },
+          { id: 'switch',          label: 'Switch' },
           { id: 'toggle',          label: 'Toggle' },
-          { id: 'daterangepicker', label: 'DateRangePicker' }
+          { id: 'slider',          label: 'Slider' },
+          { id: 'input-otp',       label: 'InputOTP' },
+          { id: 'field',           label: 'Field' },
+          { id: 'input-group',     label: 'InputGroup' },
+          { id: 'button-group',    label: 'ButtonGroup' },
+          { id: 'daterangepicker', label: 'DateRangePicker' },
+          { id: 'command',         label: 'Command' }
         ]
       },
       {
@@ -60,8 +71,12 @@ const navGroups = [
           { id: 'badge',       label: 'Badge' },
           { id: 'avatar',      label: 'Avatar' },
           { id: 'card',        label: 'Card' },
-          { id: 'metric-card', label: 'MetricCard' },
-          { id: 'datatable',   label: 'DataTable' }
+          { id: 'accordion',   label: 'Accordion' },
+          { id: 'carousel',    label: 'Carousel' },
+          { id: 'collapsible', label: 'Collapsible' },
+          { id: 'table',       label: 'Table' },
+          { id: 'kbd',         label: 'Kbd' },
+          { id: 'item',        label: 'Item' }
         ]
       },
       {
@@ -69,6 +84,7 @@ const navGroups = [
         items: [
           { id: 'alert',       label: 'Alert' },
           { id: 'toast',       label: 'Toast' },
+          { id: 'progress',    label: 'Progress' },
           { id: 'spinner',     label: 'Spinner' },
           { id: 'skeleton',    label: 'Skeleton' },
           { id: 'empty-state', label: 'EmptyState' }
@@ -77,44 +93,62 @@ const navGroups = [
       {
         name: 'NAVIGATION',
         items: [
-          { id: 'tabs',           label: 'Tabs' },
-          { id: 'sidebar-comp',   label: 'Sidebar' },
-          { id: 'breadcrumb-comp',label: 'Breadcrumb' },
-          { id: 'pagination',     label: 'Pagination' }
+          { id: 'tabs',             label: 'Tabs' },
+          { id: 'sidebar-comp',     label: 'Sidebar' },
+          { id: 'breadcrumb-comp',  label: 'Breadcrumb' },
+          { id: 'pagination',       label: 'Pagination' },
+          { id: 'menubar',          label: 'Menubar' },
+          { id: 'navigation-menu',  label: 'NavigationMenu' }
         ]
       },
       {
         name: 'OVERLAY',
         items: [
-          { id: 'modal',          label: 'Modal' },
-          { id: 'tooltip',        label: 'Tooltip' },
-          { id: 'dropdown-menu',  label: 'DropdownMenu' }
+          { id: 'modal',         label: 'Modal' },
+          { id: 'tooltip',       label: 'Tooltip' },
+          { id: 'dropdown-menu', label: 'DropdownMenu' },
+          { id: 'alert-dialog',  label: 'AlertDialog' },
+          { id: 'context-menu',  label: 'ContextMenu' },
+          { id: 'drawer',        label: 'Drawer' },
+          { id: 'hover-card',    label: 'HoverCard' },
+          { id: 'popover',       label: 'Popover' },
+          { id: 'sheet',         label: 'Sheet' }
         ]
       },
       {
         name: 'LAYOUT',
         items: [
-          { id: 'appshell',    label: 'AppShell' },
-          { id: 'page-header', label: 'PageHeader' }
+          { id: 'aspect-ratio', label: 'AspectRatio' },
+          { id: 'resizable',    label: 'Resizable' },
+          { id: 'scroll-area',  label: 'ScrollArea' }
         ]
       }
     ]
   },
   {
+    title: 'PATTERNS',
+    items: [
+      { id: 'metric-card', label: 'MetricCard' },
+      { id: 'datatable',   label: 'DataTable' },
+      { id: 'appshell',    label: 'AppShell' },
+      { id: 'page-header', label: 'PageHeader' }
+    ]
+  },
+  {
     title: 'GRÁFICOS',
     items: [
-      { id: 'charts-tokens',   label: 'Tokens & Padrões' },
-      { id: 'charts-line',     label: 'Line Chart' },
-      { id: 'charts-area',     label: 'Area Chart' },
+      { id: 'charts-tokens',    label: 'Tokens & Padrões' },
+      { id: 'charts-line',      label: 'Line Chart' },
+      { id: 'charts-area',      label: 'Area Chart' },
       { id: 'charts-bar-simple',label: 'Bar Simples' },
-      { id: 'charts-bar',      label: 'Stacked Bar' },
-      { id: 'charts-hbar',     label: 'Horizontal Bar' },
-      { id: 'charts-pie',      label: 'Pie Chart' },
-      { id: 'charts-donut',    label: 'Donut Chart' },
-      { id: 'charts-funnel',   label: 'Funnel Chart' },
-      { id: 'charts-radar',    label: 'Radar Chart' },
-      { id: 'charts-scatter',  label: 'Scatter / Bubble' },
-      { id: 'charts-treemap',  label: 'Treemap' }
+      { id: 'charts-bar',       label: 'Stacked Bar' },
+      { id: 'charts-hbar',      label: 'Horizontal Bar' },
+      { id: 'charts-pie',       label: 'Pie Chart' },
+      { id: 'charts-donut',     label: 'Donut Chart' },
+      { id: 'charts-funnel',    label: 'Funnel Chart' },
+      { id: 'charts-radar',     label: 'Radar Chart' },
+      { id: 'charts-scatter',   label: 'Scatter / Bubble' },
+      { id: 'charts-treemap',   label: 'Treemap' }
     ]
   }
 ]

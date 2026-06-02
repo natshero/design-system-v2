@@ -19,6 +19,9 @@ import { BorderRadiusSection } from './Foundations/BorderRadiusSection'
 // Components
 import { ComponentRenderer } from './Components/ComponentRenderer'
 
+// Patterns
+import { PatternsRenderer } from './Patterns/PatternsRenderer'
+
 // Charts
 import { ChartsSection } from './Charts/ChartsSection'
 
@@ -34,6 +37,10 @@ const CHART_SECTIONS = new Set([
   'charts-funnel','charts-radar','charts-scatter','charts-treemap',
 ])
 
+const PATTERN_SECTIONS = new Set([
+  'metric-card','datatable','appshell','page-header',
+])
+
 export const SectionRenderer: React.FC<SectionRendererProps> = ({ activeSection, productId, navItems }) => {
   const activeItem = navItems.find(i => i.id === activeSection)
   const label = activeItem?.label ?? activeSection
@@ -41,6 +48,11 @@ export const SectionRenderer: React.FC<SectionRendererProps> = ({ activeSection,
   // Charts
   if (CHART_SECTIONS.has(activeSection)) {
     return <ChartsSection activeSection={activeSection} label={label} />
+  }
+
+  // Patterns
+  if (PATTERN_SECTIONS.has(activeSection)) {
+    return <PatternsRenderer id={activeSection} label={label} />
   }
 
   switch (activeSection) {
