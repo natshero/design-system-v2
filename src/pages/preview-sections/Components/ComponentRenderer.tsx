@@ -379,7 +379,7 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({ id, label,
             <Label>Produto</Label>
             <Select>
               <SelectTrigger><SelectValue placeholder="Selecione o produto…" /></SelectTrigger>
-              <SelectContent>
+              <SelectContent alignItemWithTrigger={false}>
                 <SelectItem value="mi-tool">MI Tool</SelectItem>
                 <SelectItem value="datarank">DataRank</SelectItem>
                 <SelectItem value="ads">Ads Intelligence</SelectItem>
@@ -396,7 +396,7 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({ id, label,
         <div className="max-w-xs">
           <Select>
             <SelectTrigger><SelectValue placeholder="Selecione a plataforma…" /></SelectTrigger>
-            <SelectContent>
+            <SelectContent alignItemWithTrigger={false}>
               <SelectGroup>
                 <SelectItem value="ios">iOS</SelectItem>
                 <SelectItem value="android">Android</SelectItem>
@@ -1419,7 +1419,7 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({ id, label,
               <div className="space-y-1.5"><Label>Keyword</Label><Input placeholder="ex: aso tools" /></div>
               <div className="space-y-1.5">
                 <Label>Mercado</Label>
-                <Select><SelectTrigger><SelectValue placeholder="Selecione…" /></SelectTrigger><SelectContent><SelectItem value="br">🇧🇷 Brasil</SelectItem><SelectItem value="us">🇺🇸 EUA</SelectItem></SelectContent></Select>
+                <Select><SelectTrigger><SelectValue placeholder="Selecione…" /></SelectTrigger><SelectContent alignItemWithTrigger={false}><SelectItem value="br">🇧🇷 Brasil</SelectItem><SelectItem value="us">🇺🇸 EUA</SelectItem></SelectContent></Select>
               </div>
             </div>
             <DialogFooter><Button variant="outline" size="sm">Cancelar</Button><Button size="sm">Adicionar</Button></DialogFooter>
@@ -1612,10 +1612,10 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({ id, label,
             <DrawerHeader><DrawerTitle>Filtros</DrawerTitle><DrawerDescription>Configure os filtros de busca de keywords.</DrawerDescription></DrawerHeader>
             <div className="px-4 space-y-4">
               <div className="space-y-1.5"><Label>Plataforma</Label>
-                <Select><SelectTrigger><SelectValue placeholder="Selecione..." /></SelectTrigger><SelectContent><SelectItem value="ios">iOS</SelectItem><SelectItem value="android">Android</SelectItem></SelectContent></Select>
+                <Select><SelectTrigger><SelectValue placeholder="Selecione..." /></SelectTrigger><SelectContent alignItemWithTrigger={false}><SelectItem value="ios">iOS</SelectItem><SelectItem value="android">Android</SelectItem></SelectContent></Select>
               </div>
               <div className="space-y-1.5"><Label>País</Label>
-                <Select><SelectTrigger><SelectValue placeholder="Selecione..." /></SelectTrigger><SelectContent><SelectItem value="br">Brasil</SelectItem><SelectItem value="us">EUA</SelectItem></SelectContent></Select>
+                <Select><SelectTrigger><SelectValue placeholder="Selecione..." /></SelectTrigger><SelectContent alignItemWithTrigger={false}><SelectItem value="br">Brasil</SelectItem><SelectItem value="us">EUA</SelectItem></SelectContent></Select>
               </div>
             </div>
             <DrawerFooter>
@@ -1682,7 +1682,7 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({ id, label,
             <div className="space-y-4">
               <p className="text-[14px] font-semibold">Filtros</p>
               <div className="space-y-1.5"><Label className="text-[13px]">Plataforma</Label>
-                <Select><SelectTrigger><SelectValue placeholder="Todas..." /></SelectTrigger><SelectContent><SelectItem value="ios">iOS</SelectItem><SelectItem value="android">Android</SelectItem></SelectContent></Select>
+                <Select><SelectTrigger><SelectValue placeholder="Todas..." /></SelectTrigger><SelectContent alignItemWithTrigger={false}><SelectItem value="ios">iOS</SelectItem><SelectItem value="android">Android</SelectItem></SelectContent></Select>
               </div>
               <div className="space-y-1.5"><Label className="text-[13px]">Volume mínimo</Label>
                 <Input type="number" placeholder="ex: 1000" />
