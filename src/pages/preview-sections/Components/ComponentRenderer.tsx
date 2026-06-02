@@ -1,532 +1,1119 @@
+/**
+ * ComponentRenderer — demos de componentes fiéis a docs/mi-tool/index.html
+ * IDs mapeados exatamente como no navGroups de ProductPreviewPage.
+ * Usa CSS vars (var(--primary), var(--card), etc.) — responde ao tema ativo.
+ */
 import React, { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Switch } from '@/components/ui/switch'
+import { Button }       from '@/components/ui/button'
+import { Input }        from '@/components/ui/input'
+import { Label }        from '@/components/ui/label'
+import { Textarea }     from '@/components/ui/textarea'
+import { Badge }        from '@/components/ui/badge'
+import { Checkbox }     from '@/components/ui/checkbox'
+import { Switch }       from '@/components/ui/switch'
+import { Toggle }       from '@/components/ui/toggle'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Skeleton }     from '@/components/ui/skeleton'
+import { Progress }     from '@/components/ui/progress'
+import { Separator }    from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination'
-import { Calendar } from '@/components/ui/calendar'
+import {
+  Card, CardContent, CardDescription,
+  CardFooter, CardHeader, CardTitle,
+} from '@/components/ui/card'
+import {
+  Select, SelectContent, SelectItem,
+  SelectTrigger, SelectValue,
+} from '@/components/ui/select'
+import {
+  Breadcrumb, BreadcrumbItem, BreadcrumbLink,
+  BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb'
+import {
+  Dialog, DialogContent, DialogDescription,
+  DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
+} from '@/components/ui/dialog'
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
+  DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import {
+  Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
+} from '@/components/ui/tooltip'
+import {
+  Table, TableBody, TableCell, TableHead,
+  TableHeader, TableRow,
+} from '@/components/ui/table'
+import {
+  Pagination, PaginationContent, PaginationEllipsis,
+  PaginationItem, PaginationLink, PaginationNext, PaginationPrevious,
+} from '@/components/ui/pagination'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Skeleton } from '@/components/ui/skeleton'
-import { format } from 'date-fns'
-import { Calendar as CalendarIcon, Info, AlertCircle, FileWarning, MoreHorizontal, CheckCircle2, LayoutDashboard, Settings, Box } from 'lucide-react'
+import { Calendar } from '@/components/ui/calendar'
+import { format, subDays, subMonths } from 'date-fns'
+import type { DateRange } from 'react-day-picker'
+import { useDSTranslation } from '@/i18n'
+import {
+  Info, AlertCircle, CheckCircle2, AlertTriangle,
+  CalendarIcon, MoreHorizontal, Settings, LayoutDashboard,
+  TrendingUp, TrendingDown, Minus, Star, Trash2,
+  ChevronRight, Home, User, Bell,
+  ArrowUpRight, ArrowDownRight,
+} from 'lucide-react'
 import { toast } from 'sonner'
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+function PreviewBox({ children, center = true }: { children: React.ReactNode; center?: boolean }) {
+  return (
+    <div className={`p-8 rounded-xl border border-border bg-card/20 ${center ? 'flex items-center justify-center' : ''}`}>
+      {children}
+    </div>
+  )
+}
+
+function SectionTitle({ children }: { children: React.ReactNode }) {
+  return (
+    <h2 className="text-[22px] font-semibold font-display text-foreground border-b border-border pb-2 mt-8 first:mt-0">
+      {children}
+    </h2>
+  )
+}
+
+// ── DateRangePicker (componente dedicado por complexidade) ───────────────────
+
+function DateRangePickerSection({ breadcrumb, header }: { breadcrumb: React.ReactNode; header: React.ReactNode }) {
+  const { t } = useDSTranslation()
+
+  // Presets dinâmicos — labels vêm das traduções (pt-BR | en-US | es-ES)
+  const PRESETS = [
+    { key: 'today',       label: t('datepicker.presets.today'),       range: () => { const d = new Date(); return { from: d, to: d } } },
+    { key: 'yesterday',   label: t('datepicker.presets.yesterday'),   range: () => { const d = subDays(new Date(), 1); return { from: d, to: d } } },
+    { key: 'last7days',   label: t('datepicker.presets.last7days'),   range: () => ({ from: subDays(new Date(), 6), to: new Date() }) },
+    { key: 'last15days',  label: t('datepicker.presets.last15days'),  range: () => ({ from: subDays(new Date(), 14), to: new Date() }) },
+    { key: 'lastMonth',   label: t('datepicker.presets.lastMonth'),   range: () => ({ from: subDays(new Date(), 29), to: new Date() }) },
+    { key: 'last3months', label: t('datepicker.presets.last3months'), range: () => ({ from: subMonths(new Date(), 3), to: new Date() }) },
+  ]
+
+  const [range, setRange] = React.useState<DateRange | undefined>({
+    from: subDays(new Date(), 6),
+    to: new Date(),
+  })
+  const [open, setOpen] = React.useState(false)
+  const [activePresetKey, setActivePresetKey] = React.useState<string>('last7days')
+  // C3: estado de validação — range incompleto (skill: error-feedback + inline-validation)
+  const [touched, setTouched] = React.useState(false)
+  const isInvalid = touched && range?.from && !range?.to
+
+  const label = range?.from
+    ? range.to
+      ? `${format(range.from, 'dd/MM/yyyy')} — ${format(range.to, 'dd/MM/yyyy')}`
+      : format(range.from, 'dd/MM/yyyy')
+    : t('datepicker.placeholder')
+
+  const applyPreset = (preset: typeof PRESETS[0]) => {
+    setRange(preset.range())
+    setActivePresetKey(preset.key)
+    setTouched(false)
+  }
+
+  const handleApply = () => {
+    setTouched(true)
+    if (range?.from && range?.to) setOpen(false)
+  }
+
+  return (
+    <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+      {breadcrumb}{header}
+
+      <h2 className="text-[22px] font-semibold font-display text-foreground border-b border-border pb-2">
+        DateRangePicker interativo
+      </h2>
+      <div className="p-8 rounded-xl border border-border bg-card/20 flex flex-col items-start gap-4">
+        {/* Trigger */}
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger>
+            <button
+              className={`inline-flex items-center gap-2 px-3.5 py-2.5 text-[13px] rounded-lg border bg-card text-foreground hover:border-primary transition-colors font-sans min-w-[260px] justify-start ${
+                isInvalid ? 'border-error' : 'border-border-emphasis'
+              }`}
+              aria-invalid={isInvalid ? 'true' : undefined}
+              aria-describedby={isInvalid ? 'drp-error' : undefined}
+              style={{ boxShadow: open ? `0 0 0 3px color-mix(in srgb, var(--primary) 15%, transparent)` : isInvalid ? `0 0 0 3px color-mix(in srgb, var(--error) 15%, transparent)` : undefined, borderColor: open ? 'var(--primary)' : isInvalid ? 'var(--error)' : undefined }}
+            >
+              <CalendarIcon size={14} className="text-muted-foreground shrink-0" />
+              <span className={range?.from ? 'text-foreground' : 'text-muted-foreground'}>
+                {label}
+              </span>
+              <span className="ml-auto text-muted-foreground text-[10px]">▾</span>
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0 shadow-lg" align="start" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
+            {/* Header com presets */}
+            <div className="flex items-center gap-1.5 p-3 border-b border-border flex-wrap">
+              <span className="text-[11px] font-medium text-muted-foreground mr-1 shrink-0">Período:</span>
+              {PRESETS.map(p => (
+                <button
+                  key={p.label}
+                  onClick={() => applyPreset(p)}
+                  className="px-2.5 py-1 text-[11px] rounded-full border transition-all"
+                  style={activePresetKey === p.key
+                    ? { background: 'color-mix(in srgb, var(--primary) 15%, transparent)', borderColor: 'var(--primary)', color: 'var(--primary)' }
+                    : { background: 'var(--muted)', borderColor: 'var(--border)', color: 'var(--muted-foreground)' }
+                  }
+                >
+                  {p.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Calendário de range */}
+            <Calendar
+              mode="range"
+              selected={range}
+              onSelect={r => { setRange(r); setActivePresetKey('') }}
+              numberOfMonths={2}
+              className="p-3"
+            />
+
+            {/* Footer */}
+            <div className="flex items-center justify-between p-3 border-t border-border">
+              <span className="text-[12px] text-muted-foreground">
+                {range?.from && range?.to
+                  ? `${Math.round((range.to.getTime() - range.from.getTime()) / 86400000) + 1} dias`
+                  : t('datepicker.presetsTitle')}
+              </span>
+              <button
+                onClick={handleApply}
+                className="px-3 py-1.5 text-[12px] font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+                disabled={!range?.from}
+              >
+                {t('datepicker.apply')}
+              </button>
+            </div>
+          </PopoverContent>
+        </Popover>
+
+        {/* C3: mensagem de erro quando range incompleto (skill: error-placement + error-clarity) */}
+        {isInvalid && (
+          <p id="drp-error" role="alert" className="text-[12px] text-error flex items-center gap-1.5">
+            <span aria-hidden="true">⚠</span>
+            Selecione também a data de término — clique em uma segunda data no calendário.
+          </p>
+        )}
+
+        {/* Estado atual — visível apenas quando range completo */}
+        {range?.from && range?.to && (
+          <div className="text-[12px] font-mono text-muted-foreground bg-muted/30 px-3 py-2 rounded-md border border-border/50">
+            <span className="text-primary">from:</span> {format(range.from, 'yyyy-MM-dd')}
+            <span className="mx-2 text-muted-foreground/40">|</span>
+            <span className="text-primary">to:</span> {format(range.to, 'yyyy-MM-dd')}
+          </div>
+        )}
+      </div>
+
+      <h2 className="text-[22px] font-semibold font-display text-foreground border-b border-border pb-2 mt-8">
+        Trigger compacto
+      </h2>
+      <div className="p-8 rounded-xl border border-border bg-card/20 flex gap-3 flex-wrap">
+        <button className="inline-flex items-center gap-2 px-3 py-2 text-[13px] rounded-lg border border-border bg-card text-foreground hover:border-primary transition-colors">
+          <CalendarIcon size={13} className="text-muted-foreground" />
+          {range?.from ? format(range.from, 'dd/MM') : '—'}
+          {range?.to && <> — {format(range.to, 'dd/MM')}</>}
+        </button>
+        <button className="inline-flex items-center gap-1.5 px-3 py-2 text-[12px] rounded-full border border-border text-muted-foreground hover:border-primary hover:text-primary transition-colors">
+          Últimos 7 dias ▾
+        </button>
+      </div>
+    </section>
+  )
+}
+
+// ────────────────────────────────────────────────────────────────────────────
 
 interface ComponentRendererProps {
   id: string
   label: string
 }
 
-export const ComponentRenderer: React.FC<ComponentRendererProps> = ({ id, label }) => {
-  const [date, setDate] = useState<Date | undefined>(new Date())
+// ── Main component ────────────────────────────────────────────────────────────
 
-  return (
+export const ComponentRenderer: React.FC<ComponentRendererProps> = ({ id, label }) => {
+  const [checked, setChecked] = useState(false)
+  const [toggled, setToggled] = useState(false)
+  const [progress] = useState(68)
+
+  const breadcrumb = (
+    <div className="text-[11px] font-mono tracking-wider text-muted-foreground uppercase flex gap-2">
+      <span>Components</span> <span>/</span> <span className="text-foreground">{label}</span>
+    </div>
+  )
+
+  const header = (
+    <div className="space-y-3">
+      <h1 className="text-[clamp(28px,4vw,42px)] font-bold tracking-tight font-display leading-tight text-foreground">
+        {label}
+      </h1>
+      <p className="text-[17px] text-muted-foreground max-w-[640px] leading-relaxed">
+        Demonstração do componente <span className="font-semibold text-primary">{label}</span>.
+        Todos os tokens respondem ao tema ativo.
+      </p>
+    </div>
+  )
+
+  // ── INPUTS ──────────────────────────────────────────────────────────────────
+
+  if (id === 'button') return (
     <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
-      <div className="text-[11px] font-mono tracking-wider text-muted-foreground uppercase flex gap-2">
-        <span className="cursor-pointer hover:text-primary">MI Tool DS</span> <span>/</span> <span>Components</span> <span>/</span> <span>{label}</span>
-      </div>
-      <div className="border-b pb-4 border-border/40">
-        <h1 className="text-4xl font-bold tracking-tight font-['Space_Grotesk']">{label}</h1>
-        <p className="text-muted-foreground mt-3 text-[17px]">
-          Demonstração do componente <span className="font-semibold text-primary">{label}</span> importado do Shadcn UI ou criado no Design System.
-        </p>
-      </div>
-      
-      {/* ─── INPUTS ──────────────────────────────────────────────────────────── */}
-      {id === 'button' && (
-        <div className="flex flex-wrap gap-4 p-8 border border-border/40 rounded-xl bg-card/20 items-center justify-center">
-          <Button>Primary</Button>
+      {breadcrumb}{header}
+
+      <SectionTitle>Variantes</SectionTitle>
+      <PreviewBox>
+        <div className="flex flex-wrap gap-3 justify-center">
+          <Button>Default</Button>
           <Button variant="secondary">Secondary</Button>
           <Button variant="destructive">Destructive</Button>
           <Button variant="outline">Outline</Button>
           <Button variant="ghost">Ghost</Button>
           <Button variant="link">Link</Button>
         </div>
-      )}
+      </PreviewBox>
 
-      {id === 'input' && (
-         <div className="p-8 border border-border/40 rounded-xl bg-card/20 max-w-sm">
-          <div className="space-y-2">
-            <label className="text-[13px] font-medium">Email address</label>
-            <Input placeholder="name@example.com" />
+      <SectionTitle>Tamanhos</SectionTitle>
+      <PreviewBox>
+        <div className="flex flex-wrap gap-3 items-center justify-center">
+          <Button size="sm">Small</Button>
+          <Button size="default">Default</Button>
+          <Button size="lg">Large</Button>
+          <Button size="icon"><Star size={16} /></Button>
+        </div>
+      </PreviewBox>
+
+      <SectionTitle>Estados</SectionTitle>
+      <PreviewBox>
+        <div className="flex flex-wrap gap-3 justify-center">
+          <Button disabled>Disabled</Button>
+          <Button>
+            <span className="animate-spin mr-2 size-4 rounded-full border-2 border-white/30 border-t-white" />
+            Carregando…
+          </Button>
+        </div>
+      </PreviewBox>
+    </section>
+  )
+
+  if (id === 'input') return (
+    <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+      {breadcrumb}{header}
+
+      <SectionTitle>Variantes</SectionTitle>
+      <PreviewBox center={false}>
+        <div className="space-y-4 max-w-sm">
+          <div className="space-y-1.5">
+            <Label>Email</Label>
+            <Input placeholder="nome@empresa.com" type="email" />
+          </div>
+          <div className="space-y-1.5">
+            <Label>Senha</Label>
+            <Input placeholder="••••••••" type="password" />
+          </div>
+          <div className="space-y-1.5">
+            <Label className="flex gap-1">Campo obrigatório <span className="text-error">*</span></Label>
+            <Input placeholder="Obrigatório" className="border-error focus-visible:ring-error/30" />
+            <p className="text-[12px] text-error">Este campo é obrigatório</p>
+          </div>
+          <div className="space-y-1.5">
+            <Label>Desabilitado</Label>
+            <Input placeholder="Não editável" disabled />
+          </div>
+          <div className="space-y-1.5">
+            <Label>Mensagem</Label>
+            <Textarea placeholder="Digite sua mensagem..." rows={3} />
           </div>
         </div>
-      )}
+      </PreviewBox>
+    </section>
+  )
 
-      {id === 'select' && (
-        <div className="p-8 border border-border/40 rounded-xl bg-card/20 max-w-sm">
-          <div className="space-y-2">
-            <label className="text-[13px] font-medium">Selecione uma opção</label>
+  if (id === 'select') return (
+    <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+      {breadcrumb}{header}
+      <PreviewBox center={false}>
+        <div className="space-y-4 max-w-xs">
+          <div className="space-y-1.5">
+            <Label>Produto</Label>
             <Select>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione..." />
-              </SelectTrigger>
+              <SelectTrigger><SelectValue placeholder="Selecione o produto…" /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="1">Opção 1</SelectItem>
-                <SelectItem value="2">Opção 2</SelectItem>
+                <SelectItem value="mi-tool">MI Tool</SelectItem>
+                <SelectItem value="datarank">DataRank</SelectItem>
+                <SelectItem value="ads">Ads Intelligence</SelectItem>
+                <SelectItem value="geo">RankMyGEO</SelectItem>
+                <SelectItem value="community">Rank Community</SelectItem>
               </SelectContent>
             </Select>
           </div>
-        </div>
-      )}
-
-      {id === 'checkbox' && (
-         <div className="p-8 border border-border/40 rounded-xl bg-card/20 flex flex-col gap-6 max-w-sm">
-          <div className="flex items-center space-x-3">
-            <Checkbox id="terms" />
-            <label htmlFor="terms" className="text-[14px] font-medium leading-none">
-              Aceito os termos e condições
-            </label>
+          <div className="space-y-1.5">
+            <Label>Desabilitado</Label>
+            <Select disabled>
+              <SelectTrigger><SelectValue placeholder="Indisponível" /></SelectTrigger>
+            </Select>
           </div>
         </div>
-      )}
+      </PreviewBox>
+    </section>
+  )
 
-      {id === 'switch' && (
-         <div className="p-8 border border-border/40 rounded-xl bg-card/20 flex flex-col gap-6 max-w-sm">
-          <div className="flex items-center space-x-3">
-            <Switch id="airplane-mode" />
-            <label htmlFor="airplane-mode" className="text-[14px] font-medium">Ativar notificações</label>
+  if (id === 'checkbox') return (
+    <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+      {breadcrumb}{header}
+      <PreviewBox center={false}>
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <Checkbox id="cb1" checked={checked} onCheckedChange={v => setChecked(Boolean(v))} />
+            <Label htmlFor="cb1" className="cursor-pointer">
+              {checked ? 'Marcado ✓' : 'Aceito os termos e condições'}
+            </Label>
+          </div>
+          <div className="flex items-center gap-3">
+            <Checkbox id="cb2" defaultChecked />
+            <Label htmlFor="cb2" className="cursor-pointer">Receber notificações</Label>
+          </div>
+          <div className="flex items-center gap-3">
+            <Checkbox id="cb3" disabled />
+            <Label htmlFor="cb3" className="text-muted-foreground cursor-not-allowed">Desabilitado</Label>
           </div>
         </div>
-      )}
+      </PreviewBox>
+    </section>
+  )
 
-      {id === 'daterangepicker' && (
-        <div className="p-8 border border-border/40 rounded-xl bg-card/20 max-w-sm">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className="w-full justify-start text-left font-normal">
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {date ? format(date, "PPP") : <span>Selecione uma data</span>}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar mode="single" selected={date} onSelect={setDate} initialFocus />
-            </PopoverContent>
-          </Popover>
+  if (id === 'toggle') return (
+    <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+      {breadcrumb}{header}
+
+      <SectionTitle>Switch (Toggle)</SectionTitle>
+      <PreviewBox center={false}>
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <Switch id="sw1" checked={toggled} onCheckedChange={setToggled} />
+            <Label htmlFor="sw1" className="cursor-pointer">
+              Notificações: {toggled ? 'Ativas' : 'Desativadas'}
+            </Label>
+          </div>
+          <div className="flex items-center gap-3">
+            <Switch id="sw2" defaultChecked />
+            <Label htmlFor="sw2" className="cursor-pointer">Atualizações automáticas</Label>
+          </div>
+          <div className="flex items-center gap-3">
+            <Switch id="sw3" disabled />
+            <Label htmlFor="sw3" className="text-muted-foreground">Desabilitado</Label>
+          </div>
         </div>
-      )}
+      </PreviewBox>
 
-      {/* ─── DISPLAY ─────────────────────────────────────────────────────────── */}
-      {id === 'badge' && (
-        <div className="flex flex-wrap gap-4 p-8 border border-border/40 rounded-xl bg-card/20 items-center justify-center">
+      <SectionTitle>Toggle Button</SectionTitle>
+      <PreviewBox>
+        <div className="flex gap-2">
+          <Toggle>Negrito</Toggle>
+          <Toggle defaultPressed>Itálico</Toggle>
+          <Toggle>Sublinhado</Toggle>
+        </div>
+      </PreviewBox>
+    </section>
+  )
+
+  if (id === 'daterangepicker') return (
+    <DateRangePickerSection breadcrumb={breadcrumb} header={header} />
+  )
+
+  // ── DISPLAY ──────────────────────────────────────────────────────────────────
+
+  if (id === 'badge') return (
+    <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+      {breadcrumb}{header}
+
+      <SectionTitle>Variantes shadcn</SectionTitle>
+      <PreviewBox>
+        <div className="flex flex-wrap gap-3 items-center justify-center">
           <Badge>Default</Badge>
           <Badge variant="secondary">Secondary</Badge>
           <Badge variant="outline">Outline</Badge>
           <Badge variant="destructive">Destructive</Badge>
         </div>
-      )}
+      </PreviewBox>
 
-      {id === 'avatar' && (
-        <div className="flex gap-4 p-8 border border-border/40 rounded-xl bg-card/20 items-center justify-center">
-          <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" />
-            <AvatarFallback>CN</AvatarFallback>
+      <SectionTitle>Semânticas com tokens</SectionTitle>
+      <PreviewBox>
+        <div className="flex flex-wrap gap-3 items-center justify-center">
+          {[
+            { label: 'Brand', bg: 'var(--primary)', border: 'var(--primary)' },
+            { label: 'Success', bg: 'var(--success)', border: 'var(--success)' },
+            { label: 'Warning', bg: 'var(--warning)', border: 'var(--warning)' },
+            { label: 'Error', bg: 'var(--error)', border: 'var(--error)' },
+          ].map(({ label: bl, bg, border }) => (
+            <span
+              key={bl}
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium text-white border"
+              style={{ background: `color-mix(in srgb, ${bg} 15%, transparent)`, borderColor: `color-mix(in srgb, ${border} 30%, transparent)`, color: bg }}
+            >
+              <span className="size-1.5 rounded-full" style={{ background: bg }} />
+              {bl}
+            </span>
+          ))}
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium border border-border text-muted-foreground bg-muted/30">
+            Default
+          </span>
+        </div>
+      </PreviewBox>
+
+      <SectionTitle>Progress</SectionTitle>
+      <PreviewBox center={false}>
+        <div className="space-y-3 max-w-sm">
+          <div className="flex items-center gap-3">
+            <Progress value={progress} className="flex-1 h-1.5" />
+            <span className="text-[12px] font-mono text-muted-foreground w-10 text-right">{progress}%</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <Progress value={32} className="flex-1 h-1.5" />
+            <span className="text-[12px] font-mono text-muted-foreground w-10 text-right">32%</span>
+          </div>
+        </div>
+      </PreviewBox>
+    </section>
+  )
+
+  if (id === 'avatar') return (
+    <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+      {breadcrumb}{header}
+
+      <SectionTitle>Tamanhos</SectionTitle>
+      <PreviewBox>
+        <div className="flex items-end gap-4">
+          {(['size-6', 'size-8', 'size-10', 'size-12', 'size-16'] as const).map((sz, i) => (
+            <div key={sz} className="flex flex-col items-center gap-1">
+              <Avatar className={sz}>
+                <AvatarFallback className="text-xs font-semibold bg-primary/15 text-primary">
+                  {['JF', 'AP', 'CM', 'BL', 'RS'][i]}
+                </AvatarFallback>
+              </Avatar>
+              <span className="text-[10px] text-muted-foreground">{sz}</span>
+            </div>
+          ))}
+        </div>
+      </PreviewBox>
+
+      <SectionTitle>Com imagem + fallback</SectionTitle>
+      <PreviewBox>
+        <div className="flex gap-4 items-center">
+          <Avatar className="size-10">
+            <AvatarImage src="https://github.com/shadcn.png" alt="shadcn" />
+            <AvatarFallback>SC</AvatarFallback>
           </Avatar>
-          <Avatar>
-            <AvatarFallback>RM</AvatarFallback>
+          <Avatar className="size-10">
+            <AvatarFallback className="bg-primary text-white font-semibold">RM</AvatarFallback>
+          </Avatar>
+          <Avatar className="size-10">
+            <AvatarFallback className="bg-secondary text-white font-semibold">PV</AvatarFallback>
           </Avatar>
         </div>
-      )}
+      </PreviewBox>
 
-      {(id === 'card' || id === 'metriccard') && (
-        <div className="grid md:grid-cols-2 gap-6 p-8 border border-border/40 rounded-xl bg-card/20">
-          <Card className="card-pro">
-            <CardHeader>
-              <CardTitle className="text-lg">Métricas de ASO</CardTitle>
-              <CardDescription>Resumo dos últimos 7 dias</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold font-['Space_Grotesk'] text-primary">12,345</div>
-              <p className="text-[12px] text-muted-foreground mt-1">+20.1% em relação à semana anterior</p>
-            </CardContent>
-            <CardFooter>
-              <div className="flex gap-2">
-                <Badge variant="secondary" className="font-normal text-[11px] text-primary">Positivo</Badge>
-                <Badge variant="outline" className="font-normal text-[11px]">Orgânico</Badge>
-              </div>
-            </CardFooter>
-          </Card>
+      <SectionTitle>Avatar Group</SectionTitle>
+      <PreviewBox>
+        <div className="flex items-center">
+          {['JF', 'AP', 'CM', 'BL'].map((initials, i) => (
+            <Avatar
+              key={initials}
+              className="size-9 ring-2 ring-background"
+              style={{ marginLeft: i === 0 ? 0 : -10, zIndex: 4 - i }}
+            >
+              <AvatarFallback className="text-xs font-semibold bg-primary/20 text-primary">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
+          ))}
+          <Avatar className="size-9 ring-2 ring-background" style={{ marginLeft: -10 }}>
+            <AvatarFallback className="text-xs font-medium bg-muted text-muted-foreground">+4</AvatarFallback>
+          </Avatar>
         </div>
-      )}
+      </PreviewBox>
+    </section>
+  )
 
-      {id === 'datatable' && (
-        <div className="p-8 border border-border/40 rounded-xl bg-card/20">
+  if (id === 'card') return (
+    <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+      {breadcrumb}{header}
+
+      <SectionTitle>Card padrão</SectionTitle>
+      <PreviewBox center={false}>
+        <Card className="max-w-sm">
+          <CardHeader>
+            <CardTitle>Nova Análise</CardTitle>
+            <CardDescription>Configure os parâmetros para monitoramento.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="space-y-1">
+              <Label className="text-[13px]">Nome do app</Label>
+              <Input placeholder="ex: com.nubank.android" />
+            </div>
+          </CardContent>
+          <CardFooter className="flex justify-end gap-2">
+            <Button variant="outline" size="sm">Cancelar</Button>
+            <Button size="sm">Salvar</Button>
+          </CardFooter>
+        </Card>
+      </PreviewBox>
+    </section>
+  )
+
+  if (id === 'metric-card') return (
+    <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+      {breadcrumb}{header}
+
+      <SectionTitle>MetricCard</SectionTitle>
+      <PreviewBox center={false}>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          {[
+            { label: 'Downloads', value: '12.847', delta: '+20.1%', type: 'up' },
+            { label: 'Avaliação', value: '4.7 ★', delta: '+0.2', type: 'up' },
+            { label: 'Uninstalls', value: '1.203', delta: '-5.4%', type: 'down' },
+            { label: 'Ranking', value: '#12', delta: '—', type: 'neutral' },
+          ].map(({ label: ml, value, delta, type }) => (
+            <Card key={ml} className="min-w-[140px]">
+              <CardContent className="p-4 space-y-1.5">
+                <div className="flex items-center gap-1.5 text-[13px] text-muted-foreground">
+                  {type === 'up' && <TrendingUp size={12} className="text-success" />}
+                  {type === 'down' && <TrendingDown size={12} className="text-error" />}
+                  {type === 'neutral' && <Minus size={12} className="text-muted-foreground" />}
+                  {ml}
+                </div>
+                <div className="font-display font-bold text-[26px] text-foreground leading-none">{value}</div>
+                <div
+                  className={`inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full ${
+                    type === 'up'      ? 'bg-success/10 text-success' :
+                    type === 'down'    ? 'bg-error/10 text-error' :
+                    'bg-muted/50 text-muted-foreground'
+                  }`}
+                >
+                  {type === 'up' && <ArrowUpRight size={10} />}
+                  {type === 'down' && <ArrowDownRight size={10} />}
+                  {delta}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </PreviewBox>
+    </section>
+  )
+
+  if (id === 'datatable') return (
+    <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+      {breadcrumb}{header}
+
+      <SectionTitle>Tabela de Keywords</SectionTitle>
+      <PreviewBox center={false}>
+        <div className="rounded-lg border border-border overflow-hidden">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead className="w-[100px]">ID</TableHead>
-                <TableHead>Keyword</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Volume</TableHead>
+              <TableRow className="bg-muted/40">
+                <TableHead className="text-[11px] uppercase tracking-wider">Keyword</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider">Volume</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider">Rank</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider">Tendência</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wider text-right">Delta</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              <TableRow>
-                <TableCell className="font-medium">KWD-01</TableCell>
-                <TableCell>rankmyapp</TableCell>
-                <TableCell><Badge variant="secondary" className="text-green-500 bg-green-500/10">Active</Badge></TableCell>
-                <TableCell className="text-right">1,250</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="font-medium">KWD-02</TableCell>
-                <TableCell>aso tools</TableCell>
-                <TableCell><Badge variant="secondary" className="text-amber-500 bg-amber-500/10">Pending</Badge></TableCell>
-                <TableCell className="text-right">890</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="font-medium">KWD-03</TableCell>
-                <TableCell>app marketing</TableCell>
-                <TableCell><Badge variant="secondary" className="text-red-500 bg-red-500/10">Dropped</Badge></TableCell>
-                <TableCell className="text-right">340</TableCell>
-              </TableRow>
+              {[
+                { kw: 'rankmyapp', vol: '12.4K', rank: 1, trend: 'up', delta: '+3' },
+                { kw: 'aso tools', vol: '8.9K', rank: 5, trend: 'up', delta: '+1' },
+                { kw: 'app marketing', vol: '5.3K', rank: 12, trend: 'down', delta: '-2' },
+                { kw: 'mobile growth', vol: '3.1K', rank: 18, trend: 'neutral', delta: '—' },
+              ].map(({ kw, vol, rank, trend, delta }) => (
+                <TableRow key={kw} className="hover:bg-muted/20">
+                  <TableCell className="font-medium text-foreground">{kw}</TableCell>
+                  <TableCell className="text-muted-foreground">{vol}</TableCell>
+                  <TableCell>
+                    <span className="font-display font-bold text-primary">#{rank}</span>
+                  </TableCell>
+                  <TableCell>
+                    {trend === 'up' && <TrendingUp size={14} className="text-success" />}
+                    {trend === 'down' && <TrendingDown size={14} className="text-error" />}
+                    {trend === 'neutral' && <Minus size={14} className="text-muted-foreground" />}
+                  </TableCell>
+                  <TableCell className={`text-right font-medium font-display ${
+                    trend === 'up' ? 'text-success' : trend === 'down' ? 'text-error' : 'text-muted-foreground'
+                  }`}>{delta}</TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </div>
-      )}
+      </PreviewBox>
+    </section>
+  )
 
-      {/* ─── FEEDBACK ────────────────────────────────────────────────────────── */}
-      {id === 'alert' && (
-        <div className="space-y-4 p-8 border border-border/40 rounded-xl bg-card/20">
+  // ── FEEDBACK ──────────────────────────────────────────────────────────────────
+
+  if (id === 'alert') return (
+    <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+      {breadcrumb}{header}
+
+      <SectionTitle>Variantes</SectionTitle>
+      <PreviewBox center={false}>
+        <div className="space-y-3 max-w-lg">
           <Alert>
-            <Info className="h-4 w-4" />
+            <Info className="size-4" />
             <AlertTitle>Informação</AlertTitle>
-            <AlertDescription>
-              Uma nova versão da plataforma está disponível com melhorias de performance.
-            </AlertDescription>
+            <AlertDescription>Uma nova versão está disponível com melhorias de performance.</AlertDescription>
+          </Alert>
+          <Alert style={{ borderLeftColor: 'var(--success)', background: 'color-mix(in srgb, var(--success) 6%, transparent)' }}>
+            <CheckCircle2 className="size-4" style={{ color: 'var(--success)' }} />
+            <AlertTitle>Sucesso</AlertTitle>
+            <AlertDescription>Dados importados com sucesso. 1.234 keywords adicionadas.</AlertDescription>
+          </Alert>
+          <Alert style={{ borderLeftColor: 'var(--warning)', background: 'color-mix(in srgb, var(--warning) 6%, transparent)' }}>
+            <AlertTriangle className="size-4" style={{ color: 'var(--warning)' }} />
+            <AlertTitle>Atenção</AlertTitle>
+            <AlertDescription>Sua assinatura expira em 7 dias. Renove para manter o acesso.</AlertDescription>
           </Alert>
           <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
+            <AlertCircle className="size-4" />
             <AlertTitle>Erro na importação</AlertTitle>
-            <AlertDescription>
-              O arquivo enviado está corrompido ou possui um formato inválido.
-            </AlertDescription>
+            <AlertDescription>O arquivo enviado possui formato inválido ou está corrompido.</AlertDescription>
           </Alert>
         </div>
-      )}
+      </PreviewBox>
+    </section>
+  )
 
-      {id === 'toast' && (
-        <div className="flex flex-wrap gap-4 p-8 border border-border/40 rounded-xl bg-card/20 items-center justify-center">
-          <Button onClick={() => toast("Ação realizada com sucesso!")}>
-            Mostrar Toast Normal
+  if (id === 'toast') return (
+    <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+      {breadcrumb}{header}
+      <PreviewBox>
+        <div className="flex flex-wrap gap-3 justify-center">
+          <Button onClick={() => toast('Ação realizada!')} variant="outline">
+            Toast padrão
           </Button>
-          <Button variant="outline" onClick={() => toast.success("Dados salvos com sucesso!", { description: "Sexta-feira, 29 Maio 2026 às 15:24" })}>
-            Mostrar Toast de Sucesso
+          {/* Classes Tailwind com tokens semânticos — sem inline styles */}
+          <Button
+            onClick={() => toast.success('Salvo com sucesso!', { description: 'Dados atualizados às 15:24.' })}
+            className="bg-success/15 text-success border border-success/30 hover:bg-success/25"
+          >
+            Toast sucesso
+          </Button>
+          <Button
+            onClick={() => toast.warning('Atenção necessária', { description: 'Verifique os dados antes de prosseguir.' })}
+            className="bg-warning/15 text-warning border border-warning/30 hover:bg-warning/25"
+          >
+            Toast aviso
+          </Button>
+          <Button
+            onClick={() => toast.error('Erro ao salvar', { description: 'Verifique sua conexão e tente novamente.' })}
+            variant="destructive"
+          >
+            Toast erro
           </Button>
         </div>
-      )}
+      </PreviewBox>
+    </section>
+  )
 
-      {id === 'loading-states' && (
-        <div className="grid md:grid-cols-2 gap-6 p-8 border border-border/40 rounded-xl bg-card/20">
-          <div className="space-y-4">
-            <h3 className="font-medium text-sm text-muted-foreground">Skeleton (Shadcn)</h3>
-            <div className="flex items-center space-x-4">
-              <Skeleton className="h-12 w-12 rounded-full" />
-              <div className="space-y-2">
-                <Skeleton className="h-4 w-[200px]" />
-                <Skeleton className="h-4 w-[150px]" />
-              </div>
+  if (id === 'spinner') return (
+    <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+      {breadcrumb}{header}
+
+      <SectionTitle>Spinner</SectionTitle>
+      <PreviewBox>
+        <div className="flex items-end gap-6">
+          {[14, 18, 24, 36].map(size => (
+            <div key={size} className="flex flex-col items-center gap-2">
+              <span
+                className="animate-spin rounded-full border-[2px]"
+                style={{
+                  width: size, height: size,
+                  borderColor: `color-mix(in srgb, var(--primary) 18%, transparent)`,
+                  borderTopColor: 'var(--primary)',
+                  animationDuration: '0.75s',
+                }}
+              />
+              <span className="text-[10px] text-muted-foreground">{size}px</span>
             </div>
-          </div>
-          <div className="space-y-4">
-             <h3 className="font-medium text-sm text-muted-foreground">Spinner (Custom)</h3>
-             <div className="flex gap-4 items-center h-[52px]">
-                <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-r-transparent"></div>
-                <div className="h-8 w-8 animate-spin rounded-full border-[3px] border-muted-foreground border-r-transparent"></div>
-             </div>
-          </div>
+          ))}
         </div>
-      )}
+      </PreviewBox>
 
-      {id === 'emptystate' && (
-        <div className="p-8 border border-border/40 rounded-xl bg-card/20 relative overflow-hidden group">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/10 via-background/5 to-background/0 pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity duration-700"></div>
-          <div className="flex flex-col items-center justify-center p-12 text-center border-2 border-dashed border-border/50 rounded-xl bg-card/40 backdrop-blur-sm relative z-10">
-            <div className="h-16 w-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-5 rotate-3 hover:rotate-6 transition-transform shadow-sm">
-              <Box className="h-8 w-8 text-primary" />
-            </div>
-            <h3 className="text-[19px] font-semibold text-foreground tracking-tight mb-2 font-['Space_Grotesk']">Nenhuma campanha ativa</h3>
-            <p className="text-[14px] text-muted-foreground max-w-[340px] mb-6 leading-relaxed">
-              Você ainda não possui campanhas rodando. Crie sua primeira campanha para começar a monitorar os dados orgânicos.
-            </p>
-            <Button className="shadow-lg shadow-primary/20">
-              Nova Campanha
-            </Button>
-          </div>
+      <SectionTitle>Com texto de carregamento</SectionTitle>
+      <PreviewBox>
+        <div className="flex flex-col items-center gap-3">
+          <span
+            className="animate-spin rounded-full border-[3px]"
+            style={{
+              width: 36, height: 36,
+              borderColor: `color-mix(in srgb, var(--primary) 18%, transparent)`,
+              borderTopColor: 'var(--primary)',
+            }}
+          />
+          <span className="text-[13px] text-muted-foreground font-sans">Carregando dados…</span>
         </div>
-      )}
+      </PreviewBox>
+    </section>
+  )
 
-      {id === 'codeblock' && (
-        <div className="p-8 border border-border/40 rounded-xl bg-card/20">
-          <div className="relative rounded-lg bg-[#0d1117] border border-border/50 overflow-hidden text-sm">
-            <div className="flex items-center justify-between px-4 py-2 border-b border-border/40 bg-[#161b22]">
-              <div className="flex gap-2">
-                <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
-                <div className="w-3 h-3 rounded-full bg-amber-500/80"></div>
-                <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
-              </div>
-              <Button variant="ghost" size="sm" className="h-6 text-xs text-muted-foreground hover:text-foreground">
-                Copy
-              </Button>
-            </div>
-            <div className="p-4 overflow-x-auto font-mono text-[13px] leading-relaxed text-gray-300">
-              <span className="text-pink-400">const</span> fetchCampaigns = <span className="text-pink-400">async</span> () <span className="text-pink-400">=&gt;</span> {'{\n'}
-              {'  '}<span className="text-pink-400">const</span> response = <span className="text-pink-400">await</span> <span className="text-blue-400">api</span>.<span className="text-green-300">get</span>(<span className="text-amber-300">"/v1/campaigns"</span>);{'\n'}
-              {'  '}<span className="text-pink-400">return</span> response.<span className="text-blue-300">data</span>;{'\n'}
-              {'}'}
-            </div>
+  if (id === 'skeleton') return (
+    <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+      {breadcrumb}{header}
+
+      <SectionTitle>Card loading</SectionTitle>
+      <PreviewBox center={false}>
+        <div className="flex items-center gap-4 max-w-sm">
+          <Skeleton className="size-12 rounded-full shrink-0" />
+          <div className="flex-1 space-y-2">
+            <Skeleton className="h-3.5 w-full" />
+            <Skeleton className="h-3.5 w-4/5" />
           </div>
         </div>
-      )}
+      </PreviewBox>
 
-      {/* ─── NAVIGATION ──────────────────────────────────────────────────────── */}
-      {id === 'tabs' && (
-        <div className="p-8 border border-border/40 rounded-xl bg-card/20 flex justify-center">
-          <Tabs defaultValue="account" className="w-[400px]">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="account">Account</TabsTrigger>
-              <TabsTrigger value="password">Password</TabsTrigger>
-            </TabsList>
-            <TabsContent value="account">
-              <Card className="card-pro">
-                <CardHeader><CardTitle>Account</CardTitle></CardHeader>
-                <CardContent className="space-y-2 text-sm text-muted-foreground">Make changes to your account here.</CardContent>
-              </Card>
-            </TabsContent>
-            <TabsContent value="password">
-              <Card className="card-pro">
-                <CardHeader><CardTitle>Password</CardTitle></CardHeader>
-                <CardContent className="space-y-2 text-sm text-muted-foreground">Change your password here.</CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
+      <SectionTitle>Tabela loading</SectionTitle>
+      <PreviewBox center={false}>
+        <div className="space-y-2 max-w-lg">
+          <div className="flex gap-4 py-2 border-b border-border">
+            {['w-1/4', 'w-1/3', 'w-1/5', 'w-1/6'].map(w => (
+              <Skeleton key={w} className={`h-3 ${w}`} />
+            ))}
+          </div>
+          {[1,2,3].map(i => (
+            <div key={i} className="flex gap-4 py-2 border-b border-border/50">
+              {['w-1/4', 'w-1/3', 'w-1/5', 'w-1/6'].map(w => (
+                <Skeleton key={w} className={`h-3 ${w}`} />
+              ))}
+            </div>
+          ))}
         </div>
-      )}
+      </PreviewBox>
+    </section>
+  )
 
-      {id === 'breadcrumb' && (
-        <div className="p-8 border border-border/40 rounded-xl bg-card/20">
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/">Home</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <DropdownMenu>
-                  <DropdownMenuTrigger className="flex items-center gap-1">
-                    <BreadcrumbEllipsis className="h-4 w-4" />
-                    <span className="sr-only">Toggle menu</span>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start">
-                    <DropdownMenuItem>Components</DropdownMenuItem>
-                    <DropdownMenuItem>Navigation</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
+  if (id === 'empty-state') return (
+    <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+      {breadcrumb}{header}
+      <PreviewBox>
+        <div className="flex flex-col items-center text-center p-12 max-w-sm">
+          <div
+            className="size-12 rounded-2xl flex items-center justify-center mb-4"
+            style={{ background: 'color-mix(in srgb, var(--primary) 15%, transparent)' }}
+          >
+            <Bell size={24} style={{ color: 'var(--primary)' }} />
+          </div>
+          <h3 className="text-[18px] font-semibold text-foreground font-display mb-2">Nenhuma keyword monitorada</h3>
+          <p className="text-[14px] text-muted-foreground leading-relaxed mb-6">
+            Você ainda não adicionou keywords para monitoramento. Comece agora para ver dados de ranking.
+          </p>
+          <Button size="sm">Adicionar keyword</Button>
         </div>
-      )}
+      </PreviewBox>
+    </section>
+  )
 
-      {id === 'pagination' && (
-        <div className="p-8 border border-border/40 rounded-xl bg-card/20">
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious href="#" />
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#">1</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#" isActive>
-                  2
-                </PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#">3</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationEllipsis />
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationNext href="#" />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </div>
-      )}
+  // ── NAVIGATION ────────────────────────────────────────────────────────────────
 
-      {id === 'sidebar-comp' && (
-        <div className="p-8 border border-border/40 rounded-xl bg-card/20 flex justify-center">
-           <div className="w-[200px] border border-border rounded-lg bg-card overflow-hidden h-[300px] flex flex-col">
-              <div className="p-4 border-b border-border/50 font-bold text-primary flex items-center gap-2">
-                <LayoutDashboard className="w-4 h-4" /> Dashboard
+  if (id === 'tabs') return (
+    <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+      {breadcrumb}{header}
+      <PreviewBox center={false}>
+        <Tabs defaultValue="overview" className="w-full max-w-lg">
+          <TabsList className="grid grid-cols-3">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="rankings">Rankings</TabsTrigger>
+            <TabsTrigger value="reviews">Reviews</TabsTrigger>
+          </TabsList>
+          <TabsContent value="overview" className="pt-4">
+            <Card><CardContent className="pt-4 text-[14px] text-muted-foreground">Visão geral do desempenho do app nos últimos 30 dias.</CardContent></Card>
+          </TabsContent>
+          <TabsContent value="rankings" className="pt-4">
+            <Card><CardContent className="pt-4 text-[14px] text-muted-foreground">Posições nas categorias e buscas orgânicas.</CardContent></Card>
+          </TabsContent>
+          <TabsContent value="reviews" className="pt-4">
+            <Card><CardContent className="pt-4 text-[14px] text-muted-foreground">Análise de avaliações e sentimento dos usuários.</CardContent></Card>
+          </TabsContent>
+        </Tabs>
+      </PreviewBox>
+    </section>
+  )
+
+  if (id === 'sidebar-comp') return (
+    <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+      {breadcrumb}{header}
+      <PreviewBox>
+        <div
+          className="w-[200px] h-[320px] flex flex-col rounded-xl overflow-hidden border border-border/50"
+          style={{ background: 'var(--sidebar-bg)' }}
+        >
+          {/* Header */}
+          <div className="p-4 flex items-center gap-2 border-b" style={{ borderColor: 'var(--border)' }}>
+            <div className="size-6 rounded-md flex items-center justify-center text-xs font-bold text-white" style={{ background: 'var(--primary)' }}>R</div>
+            <span className="text-[13px] font-medium text-white">RankMyApp</span>
+          </div>
+          {/* Nav */}
+          <div className="flex-1 py-2 px-2 space-y-0.5">
+            {[
+              { icon: <LayoutDashboard size={13} />, label: 'Dashboard', active: true },
+              { icon: <TrendingUp size={13} />, label: 'Keywords', active: false },
+              { icon: <Star size={13} />, label: 'Reviews', active: false },
+              { icon: <Bell size={13} />, label: 'Alertas', active: false },
+            ].map(({ icon, label: nl, active }) => (
+              <div
+                key={nl}
+                className="flex items-center gap-2 px-3 py-[7px] rounded-[5px] text-[12px] cursor-pointer"
+                style={active
+                  ? { background: 'var(--sidebar-active-bg)', color: 'white', borderLeft: '2px solid var(--sidebar-active-border)', fontWeight: 500 }
+                  : { color: 'var(--sidebar-text)', borderLeft: '2px solid transparent' }
+                }
+              >
+                {icon}{nl}
               </div>
-              <div className="flex-1 p-2 space-y-1">
-                <div className="px-3 py-2 text-sm bg-primary/10 text-primary rounded-md font-medium">Analytics</div>
-                <div className="px-3 py-2 text-sm text-muted-foreground hover:bg-muted rounded-md cursor-pointer">Reports</div>
-                <div className="px-3 py-2 text-sm text-muted-foreground hover:bg-muted rounded-md cursor-pointer">Customers</div>
-              </div>
-              <div className="p-2 border-t border-border/50">
-                <div className="px-3 py-2 text-sm text-muted-foreground hover:bg-muted rounded-md flex items-center gap-2 cursor-pointer">
-                  <Settings className="w-4 h-4" /> Settings
-                </div>
-              </div>
-           </div>
+            ))}
+            <div className="text-[10px] uppercase tracking-wider px-3 pt-3 pb-1" style={{ color: 'var(--sidebar-group)' }}>
+              Config
+            </div>
+            <div
+              className="flex items-center gap-2 px-3 py-[7px] rounded-[5px] text-[12px] cursor-pointer"
+              style={{ color: 'var(--sidebar-text)', borderLeft: '2px solid transparent' }}
+            >
+              <Settings size={13} />Settings
+            </div>
+          </div>
         </div>
-      )}
+      </PreviewBox>
+    </section>
+  )
 
-      {/* ─── OVERLAY ─────────────────────────────────────────────────────────── */}
-      {id === 'modal' && (
-        <div className="p-8 border border-border/40 rounded-xl bg-card/20 flex justify-center">
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="outline">Abrir Modal de Exemplo</Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>Editar perfil</DialogTitle>
-                <DialogDescription>
-                  Faça alterações em seu perfil aqui. Clique em salvar quando terminar.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <label htmlFor="name" className="text-right text-sm">Name</label>
-                  <Input id="name" defaultValue="Pedro Duarte" className="col-span-3" />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <label htmlFor="username" className="text-right text-sm">Username</label>
-                  <Input id="username" defaultValue="@pedroduarte" className="col-span-3" />
-                </div>
+  if (id === 'breadcrumb-comp') return (
+    <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+      {breadcrumb}{header}
+      <PreviewBox center={false}>
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem><BreadcrumbLink href="/">Home</BreadcrumbLink></BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem><BreadcrumbLink href="#">MI Tool DS</BreadcrumbLink></BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem><BreadcrumbLink href="#">Components</BreadcrumbLink></BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem><BreadcrumbPage>Breadcrumb</BreadcrumbPage></BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </PreviewBox>
+    </section>
+  )
+
+  if (id === 'pagination') return (
+    <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+      {breadcrumb}{header}
+      <PreviewBox>
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem><PaginationPrevious href="#" /></PaginationItem>
+            <PaginationItem><PaginationLink href="#">1</PaginationLink></PaginationItem>
+            <PaginationItem><PaginationLink href="#" isActive>2</PaginationLink></PaginationItem>
+            <PaginationItem><PaginationLink href="#">3</PaginationLink></PaginationItem>
+            <PaginationItem><PaginationEllipsis /></PaginationItem>
+            <PaginationItem><PaginationNext href="#" /></PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      </PreviewBox>
+    </section>
+  )
+
+  // ── OVERLAY ───────────────────────────────────────────────────────────────────
+
+  if (id === 'modal') return (
+    <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+      {breadcrumb}{header}
+      <PreviewBox>
+        <Dialog>
+          <DialogTrigger>
+            <Button variant="outline">Abrir Modal</Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[440px]">
+            <DialogHeader>
+              <DialogTitle>Adicionar keyword</DialogTitle>
+              <DialogDescription>Configure os parâmetros de monitoramento para esta keyword.</DialogDescription>
+            </DialogHeader>
+            <div className="space-y-3 py-3">
+              <div className="space-y-1.5">
+                <Label>Keyword</Label>
+                <Input placeholder="ex: aso tools" />
               </div>
-              <DialogFooter>
-                <Button type="submit">Salvar alterações</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </div>
-      )}
+              <div className="space-y-1.5">
+                <Label>Mercado</Label>
+                <Select>
+                  <SelectTrigger><SelectValue placeholder="Selecione o mercado…" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="br">🇧🇷 Brasil</SelectItem>
+                    <SelectItem value="us">🇺🇸 Estados Unidos</SelectItem>
+                    <SelectItem value="uk">🇬🇧 Reino Unido</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" size="sm">Cancelar</Button>
+              <Button size="sm">Adicionar</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </PreviewBox>
+    </section>
+  )
 
-      {id === 'tooltip' && (
-        <div className="p-8 border border-border/40 rounded-xl bg-card/20 flex justify-center">
+  if (id === 'tooltip') return (
+    <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+      {breadcrumb}{header}
+      <PreviewBox>
+        <div className="flex gap-4">
           <TooltipProvider>
             <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="outline">Passe o mouse aqui</Button>
+              <TooltipTrigger>
+                <Button variant="outline" size="sm">Hover aqui</Button>
               </TooltipTrigger>
-              <TooltipContent>
-                <p>Informação adicional muito útil!</p>
-              </TooltipContent>
+              <TooltipContent><p>Informação contextual de ajuda</p></TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <Button size="icon" variant="ghost"><Info size={16} /></Button>
+              </TooltipTrigger>
+              <TooltipContent side="right"><p>Ícone de informação com tooltip</p></TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </div>
-      )}
+      </PreviewBox>
+    </section>
+  )
 
-      {id === 'dropdownmenu' && (
-        <div className="p-8 border border-border/40 rounded-xl bg-card/20 flex justify-center">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline">Opções <MoreHorizontal className="ml-2 w-4 h-4" /></Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56">
-              <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Perfil</DropdownMenuItem>
-              <DropdownMenuItem>Faturamento</DropdownMenuItem>
-              <DropdownMenuItem>Configurações</DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-red-500">Sair</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      )}
+  if (id === 'dropdown-menu') return (
+    <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+      {breadcrumb}{header}
+      <PreviewBox>
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <Button variant="outline">
+              Opções <MoreHorizontal className="ml-2 size-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-48">
+            <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="gap-2"><User size={14} />Perfil</DropdownMenuItem>
+            <DropdownMenuItem className="gap-2"><Settings size={14} />Configurações</DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="gap-2 text-error focus:text-error focus:bg-error/8">
+              <Trash2 size={14} />Excluir conta
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </PreviewBox>
+    </section>
+  )
 
-      {/* ─── LAYOUT ──────────────────────────────────────────────────────────── */}
-      {id === 'appshell' && (
-        <div className="p-8 border border-border/40 rounded-xl bg-card/20">
-          <div className="border border-border rounded-lg overflow-hidden shadow-sm">
-            {/* Fake App Shell Header */}
-            <div className="h-10 bg-card border-b border-border flex items-center px-4 justify-between">
-              <div className="flex gap-2 items-center">
-                <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
-                <div className="w-3 h-3 rounded-full bg-amber-500/80"></div>
-                <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
-              </div>
-              <div className="h-5 w-32 bg-muted rounded-md"></div>
-              <div className="w-6 h-6 rounded-full bg-primary/20"></div>
+  // ── LAYOUT ────────────────────────────────────────────────────────────────────
+
+  if (id === 'appshell') return (
+    <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+      {breadcrumb}{header}
+      <PreviewBox center={false}>
+        <div className="border border-border rounded-xl overflow-hidden w-full">
+          {/* Header */}
+          <div className="h-11 bg-card border-b border-border flex items-center px-4 justify-between">
+            <div className="flex items-center gap-2">
+              <div className="size-5 rounded flex items-center justify-center text-[10px] font-bold text-white" style={{ background: 'var(--primary)' }}>R</div>
+              <span className="text-[13px] font-medium text-foreground">MI Tool</span>
             </div>
-            {/* Fake App Shell Body */}
-            <div className="flex h-[200px] bg-background">
-              <div className="w-1/4 border-r border-border bg-muted/20 p-4 space-y-2">
-                <div className="h-3 w-full bg-muted rounded-sm"></div>
-                <div className="h-3 w-3/4 bg-muted rounded-sm"></div>
-                <div className="h-3 w-5/6 bg-muted rounded-sm"></div>
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-6 w-24 rounded-full" />
+              <Skeleton className="h-7 w-7 rounded-full" />
+            </div>
+          </div>
+          {/* Body */}
+          <div className="flex h-40 bg-background">
+            <div className="w-40 border-r border-border p-3 space-y-1.5" style={{ background: 'var(--sidebar-bg)' }}>
+              {[true, false, false, false].map((active, i) => (
+                <div
+                  key={i}
+                  className="h-5 rounded-[4px]"
+                  style={{ background: active ? 'var(--sidebar-active-bg)' : 'rgba(255,255,255,0.04)' }}
+                />
+              ))}
+            </div>
+            <div className="flex-1 p-4 space-y-3">
+              <Skeleton className="h-4 w-1/3" />
+              <div className="grid grid-cols-4 gap-2">
+                {[1,2,3,4].map(i => <Skeleton key={i} className="h-10 rounded-lg" />)}
               </div>
-              <div className="w-3/4 p-6">
-                <div className="h-6 w-1/3 bg-muted rounded-md mb-6"></div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="h-20 bg-card border border-border rounded-lg"></div>
-                  <div className="h-20 bg-card border border-border rounded-lg"></div>
-                </div>
-              </div>
+              <Skeleton className="h-16 rounded-lg" />
             </div>
           </div>
         </div>
-      )}
+      </PreviewBox>
+    </section>
+  )
 
-      {id === 'pageheader' && (
-        <div className="p-8 border border-border/40 rounded-xl bg-card/20">
-          <div className="border border-border rounded-lg p-6 bg-card flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+  if (id === 'page-header') return (
+    <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+      {breadcrumb}{header}
+      <PreviewBox center={false}>
+        <div className="space-y-4 max-w-lg">
+          {/* Breadcrumb */}
+          <div className="flex items-center gap-1.5 text-[11px] font-mono text-muted-foreground">
+            <Home size={10} /><ChevronRight size={10} />
+            <span>Keywords</span><ChevronRight size={10} />
+            <span className="text-foreground">Monitoramento</span>
+          </div>
+          {/* Title + actions */}
+          <div className="flex items-start justify-between gap-4">
             <div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-                <span>Apps</span> <span>/</span> <span>Uber</span>
-              </div>
-              <h2 className="text-2xl font-bold font-['Space_Grotesk'] text-foreground">Performance Overview</h2>
-              <p className="text-sm text-muted-foreground">Métricas detalhadas para os últimos 30 dias.</p>
+              <h1 className="text-[26px] font-bold font-display tracking-tight text-foreground leading-tight">
+                Monitoramento de Keywords
+              </h1>
+              <p className="text-[14px] text-muted-foreground mt-1">
+                128 keywords · Atualizado há 5 min
+              </p>
             </div>
-            <div className="flex gap-3">
-              <Button variant="outline">Exportar CSV</Button>
-              <Button>Atualizar Dados</Button>
+            <div className="flex gap-2 shrink-0 mt-1">
+              <Button variant="outline" size="sm">Exportar</Button>
+              <Button size="sm">+ Adicionar</Button>
             </div>
           </div>
+          <Separator />
         </div>
-      )}
+      </PreviewBox>
+    </section>
+  )
 
-      {/* FALLBACK */}
-      {!['button', 'input', 'select', 'checkbox', 'switch', 'daterangepicker', 'badge', 'avatar', 'card', 'metriccard', 'datatable', 'alert', 'toast', 'loading-states', 'emptystate', 'tabs', 'sidebar-comp', 'breadcrumb', 'pagination', 'modal', 'tooltip', 'dropdownmenu', 'appshell', 'pageheader'].includes(id) && (
-        <div className="flex flex-col gap-4 p-8 border border-dashed border-border/60 rounded-xl bg-card/10 items-center justify-center text-center py-16">
-          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2">
-            <Box className="w-6 h-6" />
-          </div>
-          <h3 className="font-semibold text-lg text-foreground">Componente em Desenvolvimento</h3>
-          <p className="text-[13px] text-muted-foreground max-w-[400px]">
-            O componente <strong>{label}</strong> será migrado do Shadcn UI em breve.
-          </p>
+  // ── Fallback (seção não implementada) ────────────────────────────────────────
+
+  return (
+    <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+      {breadcrumb}
+      <div className="space-y-3">
+        <h1 className="text-[clamp(28px,4vw,42px)] font-bold tracking-tight font-display leading-tight text-foreground">{label}</h1>
+        <p className="text-[17px] text-muted-foreground">
+          Seção em desenvolvimento. Em breve terá demonstrações do componente <strong className="text-primary">{label}</strong>.
+        </p>
+      </div>
+      <PreviewBox>
+        <div className="text-center text-muted-foreground text-[14px] py-8">
+          <div className="text-3xl mb-3">🛠</div>
+          <p>Em desenvolvimento</p>
+          <code className="text-[11px] text-primary font-mono mt-2 block">{id}</code>
         </div>
-      )}
+      </PreviewBox>
     </section>
   )
 }
-
-// Internal fake BreadcrumbEllipsis since we didn't extract it
-const BreadcrumbEllipsis = ({ className }: { className?: string }) => (
-  <span role="presentation" aria-hidden="true" className={`flex h-9 w-9 items-center justify-center ${className}`}>
-    <MoreHorizontal className="h-4 w-4" />
-    <span className="sr-only">More</span>
-  </span>
-)

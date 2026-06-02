@@ -1,335 +1,514 @@
-/* 
-  RankMyApp Design System - Themes
-  Mapping legacy tokens to Shadcn variables
+/*
+  RankMyApp Design System — themes.css
+  Fonte da verdade: docs/*/index.html (HTML estático do produto)
+
+  Mecanismo: html[data-theme="produto"] + .dark/.light
+  Modo padrão por produto:
+    - MI Tool:          Light-first  → .dark é o override
+    - DataRank:         DARK-FIRST   → .light é o override (único!)
+    - Ads Intelligence: Light-first  → .dark é o override
+    - RankCommunity:    Light-first  → .dark é o override (surfaces purple-tinted)
+    - RankMyGEO:        Light-first  → .dark é o override (surfaces verde)
 */
 
-/* ==========================================================
-   PORTAL (Home)
-   ========================================================== */
-html[data-theme="portal"] {
-  --background: #F5F7FA;
-  --foreground: #0D0D0D;
-  --card: #FFFFFF;
-  --card-foreground: #0D0D0D;
-  --popover: #FFFFFF;
-  --popover-foreground: #0D0D0D;
-  --primary: #1A88FF;
-  --primary-foreground: #FFFFFF;
-  --secondary: #6B7280;
-  --secondary-foreground: #FFFFFF;
-  --muted: #E5E7EB;
-  --muted-foreground: #9CA3AF;
-  --accent: #1A88FF;
-  --accent-foreground: #FFFFFF;
-  --destructive: #E24B4A;
-  --destructive-foreground: #FFFFFF;
-  --border: rgba(0,0,0,0.08);
-  --input: rgba(0,0,0,0.15);
-  --ring: #1A88FF;
-  --radius: 1rem;
+/* ═══════════════════════════════════════════════════════════════════════
+   TOKENS COMPARTILHADOS — iguais em todos os produtos
+   Declarados uma vez, não precisam repetir em cada bloco de produto
+   ═══════════════════════════════════════════════════════════════════════ */
+html[data-theme] {
+  /* Feedback semântico — fixos em todos os produtos */
+  --success: #07C6C3;
+  --warning: #F59E0B;
+  --error:   #E24B4A;  /* mesmo valor de --destructive */
+  /* --info = var(--primary) do produto ativo, não precisar declarar */
+
+  /* Chart — séries 3-5 e 7-8 são fixas entre produtos */
+  --chart-3: #FF0167;   /* pink — brand-accent */
+  --chart-4: #FF5700;   /* laranja */
+  --chart-5: #00D9FF;   /* ciano */
+  --chart-7: #FF935B;   /* laranja claro */
+  --chart-8: #9CA3AF;   /* cinza — competitor */
+
+  /* Chart semânticos — fixos */
+  --chart-competitor:     #9CA3AF;
+  --chart-positive:       #07C6C3;
+  --chart-negative:       #E24B4A;
+  --chart-neutral:        #F59E0B;
+  --chart-anomaly-high:   #E24B4A;
+  --chart-anomaly-medium: #F59E0B;
+  --chart-anomaly-low:    #07C6C3;
+  --chart-axis:           #9CA3AF;
+  --chart-axis-size:      11px;
+  --chart-tooltip-radius: 8px;
+  --chart-tooltip-shadow: 0 4px 12px rgba(0,0,0,0.40);
+
+  /* Sidebar — tokens fixos (valores variam por produto nos blocos abaixo) */
+  --sidebar-text:        rgba(255,255,255,0.55);
+  --sidebar-text-active: #FFFFFF;
+  --sidebar-hover-bg:    rgba(255,255,255,0.05);
+  --sidebar-group:       rgba(255,255,255,0.28);
+
+  /* Shadow accent — fixo (pink) */
+  --shadow-glow-accent: 0 4px 20px rgba(255,1,103,0.35);
+
+  /* Typography extras */
+  --font-data: 'Space Grotesk', sans-serif;
+  --tracking-tight:   -0.025em;
+  --tracking-tighter: -0.04em;
+  --tracking-label:    0.10em;
 }
 
-html[data-theme="portal"].dark {
-  --background: #0D1117;
-  --foreground: #F0F6FC;
-  --card: #161B22;
-  --card-foreground: #F0F6FC;
-  --popover: #161B22;
-  --popover-foreground: #F0F6FC;
-  --primary: #00A3FF;
-  --primary-foreground: #FFFFFF;
-  --secondary: #8B949E;
-  --secondary-foreground: #FFFFFF;
-  --muted: #21262D;
-  --muted-foreground: #6B7280;
-  --accent: #00A3FF;
-  --accent-foreground: #FFFFFF;
-  --destructive: #E24B4A;
-  --destructive-foreground: #FFFFFF;
-  --border: rgba(255,255,255,0.08);
-  --input: rgba(255,255,255,0.15);
-  --ring: #00A3FF;
+/* Dark defaults compartilhados (MI Tool, Ads, RankMyGEO no dark; DataRank no default) */
+html[data-theme].dark,
+html[data-theme="datarank"]:not(.light) {
+  --chart-grid:           rgba(255,255,255,0.06);
+  --chart-tooltip-bg:     #1A1A26;
+  --chart-tooltip-border: rgba(255,255,255,0.12);
+  --shadow-sm:            0 1px 3px rgba(0,0,0,0.40);
+  --shadow-md:            0 4px 16px rgba(0,0,0,0.50);
+  --shadow-lg:            0 8px 32px rgba(0,0,0,0.60);
+  --shadow-card-soft:     0 4px 28px 0 rgba(0,0,0,0.15);
+  --code-bg:              #0D0D1A;
 }
 
-/* ==========================================================
-   MI-TOOL
-   ========================================================== */
+/* Light defaults compartilhados */
+html[data-theme]:not(.dark):not([data-theme="datarank"]),
+html[data-theme="datarank"].light {
+  --chart-grid:           rgba(0,0,0,0.06);
+  --chart-tooltip-bg:     #FFFFFF;
+  --chart-tooltip-border: #D8D8F0;
+  --shadow-sm:            0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md:            0 4px 12px rgba(0,0,0,0.10);
+  --shadow-lg:            0 8px 24px rgba(0,0,0,0.12);
+  --shadow-card-soft:     0 4px 28px 0 rgba(0,0,0,0.06);
+  --code-bg:              #1E1E2E;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   MI TOOL — Mobile Intelligence & ASO Platform
+   Brand: Azul #1A88FF | DARK-FIRST | Sidebar SEMPRE dark (#07070C)
+   :root = dark | .light = override claro
+   ═══════════════════════════════════════════════════════════════════════ */
 html[data-theme="mi-tool"] {
-  --background: #FFFFFF;
-  --foreground: #0D0D1A;
-  --card: #F4F4FF;
-  --card-foreground: #0D0D1A;
-  --popover: #EAEAF8;
-  --popover-foreground: #0D0D1A;
-  --primary: #1A88FF;
-  --primary-foreground: #FFFFFF;
-  --secondary: #07C6C3;
+  /* Brand */
+  --primary:              #1A88FF;
+  --primary-foreground:   #FFFFFF;
+  --ring:                 #1A88FF;
+  --brand-dark:           #0050E5;
+  --secondary:            #07C6C3;
   --secondary-foreground: #FFFFFF;
-  --muted: #EAEAF8;
-  --muted-foreground: #9090B0;
-  --accent: #FF0167;
-  --accent-foreground: #FFFFFF;
-  --destructive: #E24B4A;
-  --destructive-foreground: #FFFFFF;
-  --border: rgba(0, 0, 0, 0.08);
-  --input: rgba(0, 0, 0, 0.16);
-  --ring: #1A88FF;
+  --accent:               #FF0167;
+  --accent-foreground:    #FFFFFF;
+  --accent-dark:          #CC004F;
+
+  /* Surfaces — DARK (padrão) */
+  --background:           #0A0A10;
+  --foreground:           #F0F6FC;
+  --card:                 #111119;
+  --card-foreground:      #F0F6FC;
+  --popover:              #1A1A26;
+  --popover-foreground:   #F0F6FC;
+  --muted:                #1A1A26;
+  --muted-foreground:     rgba(255,255,255,0.60);
+  --text-muted:           rgba(255,255,255,0.35);
+
+  /* Borders */
+  --border:               rgba(255,255,255,0.08);
+  --input:                rgba(255,255,255,0.15);
+
+  /* Sidebar */
+  --sidebar-bg:           #07070C;
+  --sidebar-active-bg:    rgba(26,136,255,0.15);
+  --sidebar-active-border:#1A88FF;
+
+  /* Shadows */
+  --shadow-glow:          0 4px 20px rgba(26,136,255,0.40);
+  --shadow-cta-glow:      0 4px 14px 0 rgba(26,136,255,0.35);
+
+  /* Charts */
+  --chart-1:              #1A88FF;
+  --chart-2:              #07C6C3;
+  --chart-6:              #0050E5;
+  --chart-my-app:         #1A88FF;
+  --chart-band:           rgba(26,136,255,0.12);
+
+  /* Code */
+  --code-text:            #BFDBFE;
+
+  /* Radius */
   --radius: 0.5rem;
 }
 
-html[data-theme="mi-tool"].dark {
-  --background: #0A0A10;
-  --foreground: #F0F6FC;
-  --card: #111119;
-  --card-foreground: #F0F6FC;
-  --popover: #1A1A26;
-  --popover-foreground: #F0F6FC;
-  --primary: #1A88FF;
-  --primary-foreground: #FFFFFF;
-  --secondary: #07C6C3;
-  --secondary-foreground: #FFFFFF;
-  --muted: #1A1A26;
-  --muted-foreground: rgba(255, 255, 255, 0.6);
-  --accent: #FF0167;
-  --accent-foreground: #FFFFFF;
-  --destructive: #E24B4A;
-  --destructive-foreground: #FFFFFF;
-  --border: rgba(255, 255, 255, 0.08);
-  --input: rgba(255, 255, 255, 0.15);
-  --ring: #1A88FF;
+/* Light é o OVERRIDE para MI Tool */
+html[data-theme="mi-tool"].light {
+  --background:           #FFFFFF;
+  --foreground:           #0D0D1A;
+  --card:                 #F4F4FF;
+  --card-foreground:      #0D0D1A;
+  --popover:              #EAEAF8;
+  --popover-foreground:   #0D0D1A;
+  --muted:                #EAEAF8;
+  --muted-foreground:     #5A5A78;
+  --text-muted:           #9090B0;
+  --border:               rgba(0,0,0,0.08);
+  --input:                rgba(0,0,0,0.16);
+  --sidebar-bg:           #0D0D1A;
+  --sidebar-active-bg:    rgba(26,136,255,0.18);
+  --sidebar-group:        rgba(255,255,255,0.30);
+  --code-text:            #CDD6F4;
 }
 
-/* ==========================================================
-   DATARANK
-   ========================================================== */
+
+/* ═══════════════════════════════════════════════════════════════════════
+   DATARANK — Analytics & Rankings Platform
+   Brand: Roxo #8243FF | DARK-FIRST (único!) | Sidebar SEMPRE dark
+   :root = dark | .light = override claro
+   ═══════════════════════════════════════════════════════════════════════ */
 html[data-theme="datarank"] {
-  --background: #FFFFFF;
-  --foreground: #0D0D1A;
-  --card: #F4F4FF;
-  --card-foreground: #0D0D1A;
-  --popover: #EAEAF8;
-  --popover-foreground: #0D0D1A;
-  --primary: #8243FF;
-  --primary-foreground: #FFFFFF;
-  --secondary: #07C6C3;
+  /* Brand */
+  --primary:              #8243FF;
+  --primary-foreground:   #FFFFFF;
+  --ring:                 #8243FF;
+  --brand-dark:           #6530CC;
+  --secondary:            #07C6C3;
   --secondary-foreground: #FFFFFF;
-  --muted: #EAEAF8;
-  --muted-foreground: #9090B0;
-  --accent: #FF0167;
-  --accent-foreground: #FFFFFF;
-  --destructive: #E24B4A;
-  --destructive-foreground: #FFFFFF;
-  --border: rgba(0, 0, 0, 0.08);
-  --input: rgba(0, 0, 0, 0.16);
-  --ring: #8243FF;
+  --accent:               #FF0167;
+  --accent-foreground:    #FFFFFF;
+  --accent-dark:          #CC004F;
+
+  /* Surfaces — DARK (padrão para DataRank) */
+  --background:           #0A0A10;
+  --foreground:           #F0F6FC;
+  --card:                 #111119;
+  --card-foreground:      #F0F6FC;
+  --popover:              #1A1A26;
+  --popover-foreground:   #F0F6FC;
+  --muted:                #1A1A26;
+  --muted-foreground:     rgba(255,255,255,0.60);
+  --text-muted:           rgba(255,255,255,0.35);
+
+  /* Borders */
+  --border:               rgba(255,255,255,0.08);
+  --input:                rgba(255,255,255,0.15);
+
+  /* Sidebar */
+  --sidebar-bg:           #07070C;
+  --sidebar-active-bg:    rgba(130,67,255,0.15);
+  --sidebar-active-border:#8243FF;
+
+  /* Shadows */
+  --shadow-glow:          0 4px 20px rgba(130,67,255,0.40);
+  --shadow-cta-glow:      0 4px 14px 0 rgba(130,67,255,0.35);
+
+  /* Charts */
+  --chart-1:              #8243FF;
+  --chart-2:              #07C6C3;
+  --chart-6:              #6530CC;
+  --chart-my-app:         #8243FF;
+  --chart-band:           rgba(130,67,255,0.12);
+
+  /* Code */
+  --code-text:            #C8B3FF;
+
+  /* Radius */
   --radius: 0.5rem;
 }
 
-html[data-theme="datarank"].dark {
-  --background: #0A0A10;
-  --foreground: #F0F6FC;
-  --card: #111119;
-  --card-foreground: #F0F6FC;
-  --popover: #1A1A26;
-  --popover-foreground: #F0F6FC;
-  --primary: #8243FF;
-  --primary-foreground: #FFFFFF;
-  --secondary: #07C6C3;
-  --secondary-foreground: #FFFFFF;
-  --muted: #1A1A26;
-  --muted-foreground: rgba(255, 255, 255, 0.6);
-  --accent: #FF0167;
-  --accent-foreground: #FFFFFF;
-  --destructive: #E24B4A;
-  --destructive-foreground: #FFFFFF;
-  --border: rgba(255, 255, 255, 0.08);
-  --input: rgba(255, 255, 255, 0.15);
-  --ring: #8243FF;
+/* Light é o OVERRIDE para DataRank */
+html[data-theme="datarank"].light {
+  --background:           #FFFFFF;
+  --foreground:           #0D0D1A;
+  --card:                 #F4F4FF;
+  --card-foreground:      #0D0D1A;
+  --popover:              #EAEAF8;
+  --popover-foreground:   #0D0D1A;
+  --muted:                #EAEAF8;
+  --muted-foreground:     #5A5A78;
+  --text-muted:           #9090B0;
+  --border:               rgba(0,0,0,0.08);
+  --input:                rgba(0,0,0,0.16);
+  --sidebar-bg:           #0D0D1A;
+  --sidebar-active-bg:    rgba(130,67,255,0.18);
+  --sidebar-group:        rgba(255,255,255,0.30);
+  --code-text:            #CDD6F4;
 }
 
-/* ==========================================================
-   ADS INTELLIGENCE
-   ========================================================== */
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ADS INTELLIGENCE — AI & GEO Advertising Platform
+   Brand: Azul Royal #5667EA + Lima #B8E62E + Roxo TikTok
+   DARK-FIRST | Sidebar SEMPRE dark
+   :root = dark | .light = override claro
+   ═══════════════════════════════════════════════════════════════════════ */
 html[data-theme="ads-intelligence"] {
-  --background: #FFFFFF;
-  --foreground: #0D0D1A;
-  --card: #F4F4FF;
-  --card-foreground: #0D0D1A;
-  --popover: #EAEAF8;
-  --popover-foreground: #0D0D1A;
-  --primary: #5667EA;
-  --primary-foreground: #FFFFFF;
-  --secondary: #07C6C3;
+  /* Brand */
+  --primary:              #5667EA;
+  --primary-foreground:   #FFFFFF;
+  --ring:                 #5667EA;
+  --brand-dark:           #3D4EC8;
+  --secondary:            #07C6C3;
   --secondary-foreground: #FFFFFF;
-  --muted: #EAEAF8;
-  --muted-foreground: #9090B0;
-  --accent: #FF0167;
-  --accent-foreground: #FFFFFF;
-  --destructive: #E24B4A;
-  --destructive-foreground: #FFFFFF;
-  --border: rgba(0, 0, 0, 0.08);
-  --input: rgba(0, 0, 0, 0.16);
-  --ring: #5667EA;
+  --accent:               #FF0167;
+  --accent-foreground:    #FFFFFF;
+  --accent-dark:          #CC004F;
+
+  /* Accents exclusivos de Ads */
+  --accent-lime:          #B8E62E;  /* Google Ads / CTA */
+  --accent-tiktok:        #8F4BE8;  /* TikTok Ads */
+  --accent-info-link:     #38A9D4;  /* links / info chips */
+
+  /* Surfaces — DARK (padrão) */
+  --background:           #0A0A10;
+  --foreground:           #F0F6FC;
+  --card:                 #111119;
+  --card-foreground:      #F0F6FC;
+  --popover:              #1A1A26;
+  --popover-foreground:   #F0F6FC;
+  --muted:                #1A1A26;
+  --muted-foreground:     rgba(255,255,255,0.60);
+  --text-muted:           rgba(255,255,255,0.35);
+
+  /* Borders */
+  --border:               rgba(255,255,255,0.08);
+  --input:                rgba(255,255,255,0.15);
+
+  /* Sidebar */
+  --sidebar-bg:           #07070C;
+  --sidebar-active-bg:    rgba(86,103,234,0.15);
+  --sidebar-active-border:#5667EA;
+
+  /* Shadows */
+  --shadow-glow:          0 4px 20px rgba(86,103,234,0.40);
+  --shadow-cta-glow:      0 4px 14px 0 rgba(86,103,234,0.35);
+
+  /* Charts */
+  --chart-1:              #5667EA;
+  --chart-2:              #07C6C3;
+  --chart-6:              #3D4EC8;
+  --chart-my-app:         #5667EA;
+  --chart-band:           rgba(86,103,234,0.12);
+
+  /* Code */
+  --code-text:            #A5B4FC;
+
+  /* Radius */
   --radius: 0.5rem;
 }
 
-html[data-theme="ads-intelligence"].dark {
-  --background: #0A0A10;
-  --foreground: #F0F6FC;
-  --card: #111119;
-  --card-foreground: #F0F6FC;
-  --popover: #1A1A26;
-  --popover-foreground: #F0F6FC;
-  --primary: #5667EA;
-  --primary-foreground: #FFFFFF;
-  --secondary: #07C6C3;
-  --secondary-foreground: #FFFFFF;
-  --muted: #1A1A26;
-  --muted-foreground: rgba(255, 255, 255, 0.6);
-  --accent: #FF0167;
-  --accent-foreground: #FFFFFF;
-  --destructive: #E24B4A;
-  --destructive-foreground: #FFFFFF;
-  --border: rgba(255, 255, 255, 0.08);
-  --input: rgba(255, 255, 255, 0.15);
-  --ring: #5667EA;
+/* Light é o OVERRIDE para Ads Intelligence */
+html[data-theme="ads-intelligence"].light {
+  --background:           #FFFFFF;
+  --foreground:           #0D0D1A;
+  --card:                 #F4F4FF;
+  --card-foreground:      #0D0D1A;
+  --popover:              #EAEAF8;
+  --popover-foreground:   #0D0D1A;
+  --muted:                #EAEAF8;
+  --muted-foreground:     #5A5A78;
+  --text-muted:           #9090B0;
+  --border:               rgba(0,0,0,0.08);
+  --input:                rgba(0,0,0,0.16);
+  --sidebar-bg:           #0D0D1A;
+  --sidebar-active-bg:    rgba(86,103,234,0.18);
+  --sidebar-group:        rgba(255,255,255,0.30);
+  --code-text:            #CDD6F4;
 }
 
-/* ==========================================================
-   RANKMYGEO
-   ========================================================== */
-html[data-theme="rankmygeo"] {
-  --background: #FFFFFF;
-  --foreground: #0D0D1A;
-  --card: #F4F4FF;
-  --card-foreground: #0D0D1A;
-  --popover: #EAEAF8;
-  --popover-foreground: #0D0D1A;
-  --primary: #00A884;
-  --primary-foreground: #FFFFFF;
-  --secondary: #1A88FF;
-  --secondary-foreground: #FFFFFF;
-  --muted: #EAEAF8;
-  --muted-foreground: #9090B0;
-  --accent: #FF0167;
-  --accent-foreground: #FFFFFF;
-  --destructive: #E24B4A;
-  --destructive-foreground: #FFFFFF;
-  --border: rgba(0, 0, 0, 0.08);
-  --input: rgba(0, 0, 0, 0.16);
-  --ring: #00A884;
-  --radius: 0.5rem;
-}
 
-html[data-theme="rankmygeo"].dark {
-  --background: #0A0A10;
-  --foreground: #F0F6FC;
-  --card: #111119;
-  --card-foreground: #F0F6FC;
-  --popover: #1A1A26;
-  --popover-foreground: #F0F6FC;
-  --primary: #00A884;
-  --primary-foreground: #FFFFFF;
-  --secondary: #1A88FF;
-  --secondary-foreground: #FFFFFF;
-  --muted: #1A1A26;
-  --muted-foreground: rgba(255, 255, 255, 0.6);
-  --accent: #FF0167;
-  --accent-foreground: #FFFFFF;
-  --destructive: #E24B4A;
-  --destructive-foreground: #FFFFFF;
-  --border: rgba(255, 255, 255, 0.08);
-  --input: rgba(255, 255, 255, 0.15);
-  --ring: #00A884;
-}
-
-/* ==========================================================
-   RANK COMMUNITY
-   ========================================================== */
+/* ═══════════════════════════════════════════════════════════════════════
+   RANK COMMUNITY — Comunidade & Engajamento
+   Brand: Roxo #7C3AED + ÂMBAR #F59E0B (acento, não pink!)
+   Light-first | Sidebar escura MESMO em light (#1E1242 purple)
+   Dark: superfícies purple-tinted (ÚNICO — não usar genéricas)
+   ═══════════════════════════════════════════════════════════════════════ */
 html[data-theme="rankcommunity"] {
-  --background: #FFFFFF;
-  --foreground: #0D0D1A;
-  --card: #F4F4FF;
-  --card-foreground: #0D0D1A;
-  --popover: #EAEAF8;
-  --popover-foreground: #0D0D1A;
-  --primary: #7C3AED;
-  --primary-foreground: #FFFFFF;
-  --secondary: #07C6C3;
+  /* Brand */
+  --primary:              #7C3AED;
+  --primary-foreground:   #FFFFFF;
+  --ring:                 #7C3AED;
+  --brand-dark:           #6D28D9;
+  --secondary:            #07C6C3;
   --secondary-foreground: #FFFFFF;
-  --muted: #EAEAF8;
-  --muted-foreground: #9090B0;
-  --accent: #FF0167;
-  --accent-foreground: #FFFFFF;
-  --destructive: #E24B4A;
-  --destructive-foreground: #FFFFFF;
-  --border: rgba(0, 0, 0, 0.08);
-  --input: rgba(0, 0, 0, 0.16);
-  --ring: #7C3AED;
+  --accent:               #F59E0B;  /* ÂMBAR — NÃO é pink como os outros! */
+  --accent-foreground:    #FFFFFF;
+  --accent-dark:          #D97706;
+
+  /* Surfaces — Light */
+  --background:           #FFFFFF;
+  --foreground:           #0F172A;
+  --card:                 #F8FAFC;
+  --card-foreground:      #0F172A;
+  --popover:              #F1F5F9;
+  --popover-foreground:   #0F172A;
+  --muted:                #F1F5F9;
+  --muted-foreground:     #475569;
+  --text-muted:           #94A3B8;
+
+  /* Borders — slate no light (não purple) */
+  --border:               #E2E8F0;
+  --input:                #CBD5E1;
+
+  /* Sidebar — ESCURA mesmo em light mode (deep purple) */
+  --sidebar-bg:           #1E1242;
+  --sidebar-text:         rgba(255,255,255,0.60);
+  --sidebar-text-active:  #FFFFFF;
+  --sidebar-active-bg:    rgba(124,58,237,0.22);
+  --sidebar-active-border:#A78BFA;  /* roxo mais claro para contraste */
+  --sidebar-hover-bg:     rgba(255,255,255,0.07);
+  --sidebar-group:        rgba(255,255,255,0.35);
+
+  /* Shadows — light */
+  --shadow-glow:          0 4px 20px rgba(124,58,237,0.40);
+  --shadow-cta-glow:      0 4px 14px 0 rgba(124,58,237,0.35);
+
+  /* Charts — fiel ao docs/rankcommunity/index.html */
+  --chart-1:              #7C3AED;
+  --chart-2:              #07C6C3;  /* teal — conforme docs */
+  --chart-3:              #FF0167;  /* pink — conforme docs */
+  --chart-6:              #6D28D9;
+  --chart-my-app:         #7C3AED;
+  --chart-band:           rgba(124,58,237,0.12);
+  --chart-grid:           rgba(0,0,0,0.06);
+  --chart-tooltip-bg:     #FFFFFF;
+  --chart-tooltip-border: #E2E8F0;
+
+  /* Code — light */
+  --code-bg:              #F1F5F9;
+  --code-text:            #3730A3;
+
+  /* Gradientes exclusivos do Community */
+  --gradient-brand:       linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%);
+  --gradient-energy:      linear-gradient(135deg, #F59E0B 0%, #7C3AED 100%);
+  --gradient-hero:        linear-gradient(135deg, #F59E0B 0%, #7C3AED 50%, #14B8A6 100%);
+  --gradient-soft:        linear-gradient(135deg, #F5F3FF 0%, #F0FDFA 100%);
+
+  /* Radius */
   --radius: 0.5rem;
 }
 
 html[data-theme="rankcommunity"].dark {
-  --background: #0A0A10;
-  --foreground: #F0F6FC;
-  --card: #111119;
-  --card-foreground: #F0F6FC;
-  --popover: #1A1A26;
-  --popover-foreground: #F0F6FC;
-  --primary: #7C3AED;
-  --primary-foreground: #FFFFFF;
-  --secondary: #07C6C3;
+  /* Superfícies PURPLE-TINTED — NÃO usar as genéricas #0A0A10 */
+  --background:           #0A0614;
+  --foreground:           #F1F0FF;
+  --card:                 #110A22;
+  --card-foreground:      #F1F0FF;
+  --popover:              #1A1030;
+  --popover-foreground:   #F1F0FF;
+  --muted:                #1A1030;
+  --muted-foreground:     #9B8EC4;
+  --text-muted:           #5A4E7A;
+
+  /* Borders — brand-tinted no dark (único no DS) */
+  --border:               rgba(124,58,237,0.15);
+  --input:                rgba(124,58,237,0.28);
+
+  /* Sidebar — ainda mais escura no dark */
+  --sidebar-bg:           #070414;
+  --sidebar-text:         rgba(255,255,255,0.55);
+  --sidebar-active-bg:    rgba(124,58,237,0.20);
+  --sidebar-active-border:#A78BFA;
+  --sidebar-group:        rgba(255,255,255,0.30);
+
+  /* Shadows dark */
+  --shadow-sm:            0 1px 3px rgba(0,0,0,0.50);
+  --shadow-md:            0 4px 12px rgba(0,0,0,0.60);
+  --shadow-lg:            0 8px 24px rgba(0,0,0,0.70);
+  --shadow-card-soft:     0 4px 28px 0 rgba(0,0,0,0.40);
+
+  /* Charts dark */
+  --chart-grid:           rgba(255,255,255,0.06);
+  --chart-tooltip-bg:     #1A1030;
+  --chart-tooltip-border: rgba(124,58,237,0.25);
+
+  /* Code dark */
+  --code-bg:              #0A0614;
+  --code-text:            #EDE9FE;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   RANKMYGEO — GEO Visibility & AI Engine Monitoring
+   Brand: Teal #00A884 + Lima (Gemini) + Esmeralda (Perplexity)
+   DARK-FIRST | Sidebar SEMPRE dark
+   :root = dark | .light = override claro (superfícies genéricas, não verdes)
+   ═══════════════════════════════════════════════════════════════════════ */
+html[data-theme="rankmygeo"] {
+  /* Brand */
+  --primary:              #00A884;
+  --primary-foreground:   #FFFFFF;
+  --ring:                 #00A884;
+  --brand-dark:           #008a6e;
+  --secondary:            #07C6C3;
   --secondary-foreground: #FFFFFF;
-  --muted: #1A1A26;
-  --muted-foreground: rgba(255, 255, 255, 0.6);
-  --accent: #FF0167;
-  --accent-foreground: #FFFFFF;
-  --destructive: #E24B4A;
-  --destructive-foreground: #FFFFFF;
-  --border: rgba(255, 255, 255, 0.08);
-  --input: rgba(255, 255, 255, 0.15);
-  --ring: #7C3AED;
+  --accent:               #FF0167;
+  --accent-foreground:    #FFFFFF;
+  --accent-dark:          #CC004F;
+
+  /* Accents exclusivos do GEO — motores de IA */
+  --accent-lime:          #B8E62E;  /* Gemini */
+  --accent-emerald:       #2FBF71;  /* Perplexity */
+  --accent-moss:          #24451A;  /* meta / dark label */
+
+  /* Surfaces — DARK (padrão) */
+  --background:           #0A0A10;
+  --foreground:           #F0F6FC;
+  --card:                 #111119;
+  --card-foreground:      #F0F6FC;
+  --popover:              #1A1A26;
+  --popover-foreground:   #F0F6FC;
+  --muted:                #1A1A26;
+  --muted-foreground:     rgba(255,255,255,0.60);
+  --text-muted:           rgba(255,255,255,0.35);
+
+  /* Borders */
+  --border:               rgba(255,255,255,0.08);
+  --input:                rgba(255,255,255,0.15);
+
+  /* Sidebar */
+  --sidebar-bg:           #07070C;
+  --sidebar-active-bg:    rgba(0,168,132,0.15);
+  --sidebar-active-border:#00A884;
+
+  /* Shadows */
+  --shadow-glow:          0 4px 20px rgba(0,168,132,0.40);
+  --shadow-cta-glow:      0 4px 14px 0 rgba(0,168,132,0.35);
+
+  /* Charts */
+  --chart-1:              #00A884;
+  --chart-2:              #07C6C3;
+  --chart-6:              #008a6e;
+  --chart-my-app:         #00A884;
+  --chart-band:           rgba(0,168,132,0.12);
+
+  /* Suporte GEO — badge backgrounds por motor de IA */
+  --support-teal-bg:      #DDF8F0;  /* ChatGPT */
+  --support-emerald-bg:   #E4F8ED;  /* Perplexity */
+  --support-lime-bg:      #EEFAD0;  /* Gemini */
+  --support-moss-bg:      #E8F0E4;  /* meta */
+
+  /* Code */
+  --code-text:            #DDF8F0;
+
+  /* Radius */
+  --radius: 0.5rem;
 }
 
-/* ==========================================================
-   CHART TOKENS
-   ========================================================== */
-html {
-  --chart-1: #1A88FF;
-  --chart-2: #07C6C3;
-  --chart-3: #FF0167;
-  --chart-4: #FF5700;
-  --chart-5: #00D9FF;
-}
-
-html[data-theme="datarank"], html[data-theme="datarank"].dark {
-  --chart-1: #8243FF;
-  --chart-2: #07C6C3;
-  --chart-3: #FF0167;
-  --chart-4: #FF5700;
-  --chart-5: #00D9FF;
-}
-
-html[data-theme="ads-intelligence"], html[data-theme="ads-intelligence"].dark {
-  --chart-1: #5667EA;
-  --chart-2: #07C6C3;
-  --chart-3: #FF0167;
-  --chart-4: #FF5700;
-  --chart-5: #00D9FF;
-}
-
-html[data-theme="rankmygeo"], html[data-theme="rankmygeo"].dark {
-  --chart-1: #00A884;
-  --chart-2: #1A88FF;
-  --chart-3: #FF0167;
-  --chart-4: #FF5700;
-  --chart-5: #00D9FF;
-}
-
-html[data-theme="rankcommunity"], html[data-theme="rankcommunity"].dark {
-  --chart-1: #7C3AED;
-  --chart-2: #07C6C3;
-  --chart-3: #FF0167;
-  --chart-4: #FF5700;
-  --chart-5: #00D9FF;
+/* Light é o OVERRIDE para RankMyGEO (superfícies genéricas — fonte da verdade: docs HTML) */
+html[data-theme="rankmygeo"].light {
+  --background:           #FFFFFF;
+  --foreground:           #0D0D1A;
+  --card:                 #F4F4FF;
+  --card-foreground:      #0D0D1A;
+  --popover:              #EAEAF8;
+  --popover-foreground:   #0D0D1A;
+  --muted:                #EAEAF8;
+  --muted-foreground:     #5A5A78;
+  --text-muted:           #9090B0;
+  --border:               rgba(0,0,0,0.08);
+  --input:                rgba(0,0,0,0.16);
+  --sidebar-bg:           #0D0D1A;
+  --sidebar-active-bg:    rgba(0,168,132,0.18);
+  --sidebar-group:        rgba(255,255,255,0.30);
+  --code-text:            #CDD6F4;
 }

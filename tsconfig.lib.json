@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "es2023",
+    "lib": ["ES2023", "DOM"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "jsx": "react-jsx",
+    "skipLibCheck": true,
+    "ignoreDeprecations": "6.0",
+    "baseUrl": ".",
+    "paths": { "@/*": ["./src/*"] },
+
+    "rootDir":              "./src",
+    "declaration":          true,
+    "declarationDir":       "./dist/types",
+    "emitDeclarationOnly":  true,
+    "noEmit":               false,
+    "outDir":               "./dist/types"
+  },
+  "include": ["src"],
+  "exclude": [
+    "src/pages",
+    "src/App.tsx",
+    "src/main.tsx",
+    "node_modules"
+  ]
+}

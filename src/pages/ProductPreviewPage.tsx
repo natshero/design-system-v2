@@ -1,34 +1,43 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState, useCallback } from 'react'
+import { applyTheme, removeTheme, getDefaultMode, type ProductId, type ThemeMode } from '@/theme'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
+
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
 import { ArrowLeft, Moon, Sun, Menu, Search } from 'lucide-react'
 import { SectionRenderer } from './preview-sections/SectionRenderer'
+import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 
+/**
+ * Estrutura de navegação fiel a docs/mi-tool/index.html
+ * Mesmos grupos, categorias e IDs das seções.
+ */
 const navGroups = [
-  // ... (keeping all the navGroups)
   {
     title: 'OVERVIEW',
     items: [
-      { id: 'introducao', label: 'Introducao' }
+      { id: 'introducao', label: 'Introdução' }
     ]
   },
   {
     title: 'GETTING STARTED',
     items: [
-      { id: 'guia-inicio', label: 'Guia de Início' }
+      { id: 'instalacao',  label: 'Instalação' },
+      { id: 'configuracao', label: 'Configuração' },
+      { id: 'uso-basico',  label: 'Uso Básico' }
     ]
   },
   {
     title: 'FOUNDATIONS',
     items: [
-      { id: 'cores-gradientes', label: 'Cores & Gradientes' },
-      { id: 'tipografia', label: 'Tipografia' },
-      { id: 'espacamento', label: 'Espacamento' },
-      { id: 'superficies-formas', label: 'Superfícies & Formas' }
+      { id: 'cores',         label: 'Cores' },
+      { id: 'gradiente',     label: 'Gradiente' },
+      { id: 'tipografia',    label: 'Tipografia' },
+      { id: 'espacamento',   label: 'Espaçamento' },
+      { id: 'sombras',       label: 'Sombras' },
+      { id: 'border-radius', label: 'Border Radius' }
     ]
   },
   {
@@ -37,55 +46,56 @@ const navGroups = [
       {
         name: 'INPUTS',
         items: [
-          { id: 'button', label: 'Button' },
-          { id: 'input', label: 'Input' },
-          { id: 'select', label: 'Select' },
-          { id: 'checkbox', label: 'Checkbox' },
-          { id: 'switch', label: 'Switch' },
+          { id: 'button',          label: 'Button' },
+          { id: 'input',           label: 'Input' },
+          { id: 'select',          label: 'Select' },
+          { id: 'checkbox',        label: 'Checkbox' },
+          { id: 'toggle',          label: 'Toggle' },
           { id: 'daterangepicker', label: 'DateRangePicker' }
         ]
       },
       {
         name: 'DISPLAY',
         items: [
-          { id: 'badge', label: 'Badge' },
-          { id: 'avatar', label: 'Avatar' },
-          { id: 'card', label: 'Card' },
-          { id: 'datatable', label: 'DataTable' },
-          { id: 'codeblock', label: 'CodeBlock' }
+          { id: 'badge',       label: 'Badge' },
+          { id: 'avatar',      label: 'Avatar' },
+          { id: 'card',        label: 'Card' },
+          { id: 'metric-card', label: 'MetricCard' },
+          { id: 'datatable',   label: 'DataTable' }
         ]
       },
       {
         name: 'FEEDBACK',
         items: [
-          { id: 'alert', label: 'Alert' },
-          { id: 'toast', label: 'Toast' },
-          { id: 'loading-states', label: 'Loading States' },
-          { id: 'emptystate', label: 'EmptyState' }
+          { id: 'alert',       label: 'Alert' },
+          { id: 'toast',       label: 'Toast' },
+          { id: 'spinner',     label: 'Spinner' },
+          { id: 'skeleton',    label: 'Skeleton' },
+          { id: 'empty-state', label: 'EmptyState' }
         ]
       },
       {
         name: 'NAVIGATION',
         items: [
-          { id: 'tabs', label: 'Tabs' },
-          { id: 'sidebar-comp', label: 'Sidebar' },
-          { id: 'breadcrumb', label: 'Breadcrumb' },
-          { id: 'pagination', label: 'Pagination' }
+          { id: 'tabs',           label: 'Tabs' },
+          { id: 'sidebar-comp',   label: 'Sidebar' },
+          { id: 'breadcrumb-comp',label: 'Breadcrumb' },
+          { id: 'pagination',     label: 'Pagination' }
         ]
       },
       {
         name: 'OVERLAY',
         items: [
-          { id: 'modal', label: 'Modal' },
-          { id: 'tooltip', label: 'Tooltip' },
-          { id: 'dropdownmenu', label: 'DropdownMenu' }
+          { id: 'modal',          label: 'Modal' },
+          { id: 'tooltip',        label: 'Tooltip' },
+          { id: 'dropdown-menu',  label: 'DropdownMenu' }
         ]
       },
       {
         name: 'LAYOUT',
         items: [
-          { id: 'appshell', label: 'AppShell' },
-          { id: 'pageheader', label: 'PageHeader' }
+          { id: 'appshell',    label: 'AppShell' },
+          { id: 'page-header', label: 'PageHeader' }
         ]
       }
     ]
@@ -93,18 +103,18 @@ const navGroups = [
   {
     title: 'GRÁFICOS',
     items: [
-      { id: 'charts-tokens', label: 'Tokens & Padroes' },
-      { id: 'line-chart', label: 'Line Chart' },
-      { id: 'area-chart', label: 'Area Chart' },
-      { id: 'bar-simples', label: 'Bar Simples' },
-      { id: 'stacked-bar', label: 'Stacked Bar' },
-      { id: 'horizontal-bar', label: 'Horizontal Bar' },
-      { id: 'pie-chart', label: 'Pie Chart' },
-      { id: 'donut-chart', label: 'Donut Chart' },
-      { id: 'funnel-chart', label: 'Funnel Chart' },
-      { id: 'radar-chart', label: 'Radar Chart' },
-      { id: 'scatter-chart', label: 'Scatter / Bubble' },
-      { id: 'treemap-chart', label: 'Treemap' }
+      { id: 'charts-tokens',   label: 'Tokens & Padrões' },
+      { id: 'charts-line',     label: 'Line Chart' },
+      { id: 'charts-area',     label: 'Area Chart' },
+      { id: 'charts-bar-simple',label: 'Bar Simples' },
+      { id: 'charts-bar',      label: 'Stacked Bar' },
+      { id: 'charts-hbar',     label: 'Horizontal Bar' },
+      { id: 'charts-pie',      label: 'Pie Chart' },
+      { id: 'charts-donut',    label: 'Donut Chart' },
+      { id: 'charts-funnel',   label: 'Funnel Chart' },
+      { id: 'charts-radar',    label: 'Radar Chart' },
+      { id: 'charts-scatter',  label: 'Scatter / Bubble' },
+      { id: 'charts-treemap',  label: 'Treemap' }
     ]
   }
 ]
@@ -118,51 +128,69 @@ const allNavItems = navGroups.flatMap(group => {
 export const ProductPreviewPage: React.FC = () => {
   const { productId } = useParams<{ productId: string }>()
   const navigate = useNavigate()
-  const [isDark, setIsDark] = useState(true)
+
+  const [mode, setModeState] = useState<ThemeMode>(() =>
+    getDefaultMode((productId ?? 'mi-tool') as ProductId)
+  )
   const [activeSection, setActiveSection] = useState('introducao')
   const [isCommandOpen, setIsCommandOpen] = useState(false)
   const [isSheetOpen, setIsSheetOpen] = useState(false)
 
+  // Aplica o tema via applyTheme() sempre que produto ou modo mudar
   useEffect(() => {
     if (productId) {
-      document.documentElement.setAttribute('data-theme', productId)
+      applyTheme(productId as ProductId, mode, { persist: false })
     }
-    
-    if (isDark) {
-      document.documentElement.classList.add('dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-    }
+    return () => removeTheme()
+  }, [productId, mode])
 
-    return () => {
-      document.documentElement.removeAttribute('data-theme')
-    }
-  }, [productId, isDark])
+  // Reseta o modo ao navegar entre produtos
+  useEffect(() => {
+    setModeState(getDefaultMode((productId ?? 'mi-tool') as ProductId))
+  }, [productId])
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
-      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
         e.preventDefault()
-        setIsCommandOpen((open) => !open)
+        setIsCommandOpen(open => !open)
       }
     }
-    document.addEventListener("keydown", down)
-    return () => document.removeEventListener("keydown", down)
+    document.addEventListener('keydown', down)
+    return () => document.removeEventListener('keydown', down)
   }, [])
 
-  const toggleTheme = () => setIsDark(!isDark)
+  const toggleTheme = useCallback(() => {
+    setModeState(prev => prev === 'dark' ? 'light' : 'dark')
+  }, [])
 
-  const NavLink = ({ item, isNested, onClickCallback }: { item: { id: string, label: string }, isNested?: boolean, onClickCallback?: () => void }) => {
-    const isActive = activeSection === item.id;
+  const isDark = mode === 'dark'
+
+  // ref para preservar scroll do sidebar desktop entre re-renders
+  const sidebarScrollRef = useRef<HTMLDivElement>(null)
+
+  // Restaura scroll após mudança de seção (evita reset ao clicar)
+  useEffect(() => {
+    // Não faz nada — o ref garante que o DOM não é desmontado
+  }, [activeSection])
+
+  // NavLink como arrow function estável dentro do escopo
+  const renderNavLink = (
+    item: { id: string; label: string },
+    opts?: { isNested?: boolean; onClickCallback?: () => void }
+  ) => {
+    const isActive = activeSection === item.id
     return (
       <button
+        key={item.id}
         onClick={() => {
           setActiveSection(item.id)
-          if (onClickCallback) onClickCallback()
+          opts?.onClickCallback?.()
         }}
-        className={`w-full flex items-center ${isNested ? 'pl-7' : 'pl-5'} pr-4 py-[7px] text-[13px] transition-colors border-l-[2px] text-left ${
-          isActive 
-            ? 'bg-primary/15 text-foreground border-primary font-medium' 
+        aria-current={isActive ? 'page' : undefined}
+        className={`w-full min-h-[44px] flex items-center ${opts?.isNested ? 'pl-7' : 'pl-5'} pr-4 py-3 text-[13px] transition-colors border-l-[2px] text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary ${
+          isActive
+            ? 'bg-primary/15 text-foreground border-primary font-medium'
             : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground border-transparent'
         }`}
       >
@@ -171,58 +199,54 @@ export const ProductPreviewPage: React.FC = () => {
     )
   }
 
+  // Lista de nav reutilizável (renderizada inline — não como sub-componente)
+  const renderNavList = (onNavClick?: () => void) => (
+    <>
+      {navGroups.map((group, idx) => (
+        <div key={idx} className="mb-6">
+          <div className="px-5 py-2 text-[10px] font-medium uppercase tracking-[0.1em] text-muted-foreground font-mono mb-1">
+            {group.title}
+          </div>
+          {group.items && (
+            <div className="flex flex-col">
+              {group.items.map(item => renderNavLink(item, { onClickCallback: onNavClick }))}
+            </div>
+          )}
+          {group.categories && (
+            <div className="flex flex-col space-y-2 mt-1">
+              {group.categories.map((cat, catIdx) => (
+                <div key={catIdx}>
+                  <div className="pl-7 pr-4 py-1.5 text-[10px] font-medium uppercase tracking-[0.08em] text-muted-foreground/70 mb-0.5">
+                    {cat.name}
+                  </div>
+                  <div className="flex flex-col">
+                    {cat.items.map(item => renderNavLink(item, { isNested: true, onClickCallback: onNavClick }))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
+    </>
+  )
+
+  // Conteúdo do sidebar para o Sheet (mobile) — pode re-renderizar normalmente
   const NavigationContent = ({ onNavClick }: { onNavClick?: () => void }) => (
     <>
       <div className="p-4 border-b border-border/20">
         <button
-          onClick={() => {
-            setIsCommandOpen(true)
-            if (onNavClick) onNavClick()
-          }}
-          className="inline-flex w-full items-center justify-between whitespace-nowrap rounded-md border border-border/50 bg-background/50 px-3 py-2 text-[13px] font-medium text-muted-foreground shadow-sm transition-colors hover:bg-muted/50 hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+          onClick={() => { setIsCommandOpen(true); onNavClick?.() }}
+          className="inline-flex w-full items-center justify-between whitespace-nowrap rounded-md border border-border/50 bg-background/50 px-3 py-2 text-[13px] font-medium text-muted-foreground shadow-sm transition-colors hover:bg-muted/50 hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
         >
-          <span className="flex items-center gap-2">
-            <Search className="h-4 w-4" />
-            Buscar...
-          </span>
-          <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+          <span className="flex items-center gap-2"><Search className="h-4 w-4" />Buscar...</span>
+          <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
             <span className="text-xs">⌘</span>K
           </kbd>
         </button>
       </div>
       <div className="flex-1 overflow-y-auto py-4 custom-scrollbar">
-        {navGroups.map((group, idx) => (
-          <div key={idx} className="mb-6">
-            <div className="px-5 py-2 text-[10px] font-medium uppercase tracking-[0.1em] text-muted-foreground font-mono mb-1">
-              {group.title}
-            </div>
-            
-            {group.items && (
-              <div className="flex flex-col">
-                {group.items.map(item => (
-                  <NavLink key={item.id} item={item} onClickCallback={onNavClick} />
-                ))}
-              </div>
-            )}
-
-            {group.categories && (
-              <div className="flex flex-col space-y-2 mt-1">
-                {group.categories.map((cat, catIdx) => (
-                  <div key={catIdx}>
-                    <div className="pl-7 pr-4 py-1.5 text-[10px] font-medium uppercase tracking-[0.08em] text-muted-foreground/70 mb-0.5">
-                      {cat.name}
-                    </div>
-                    <div className="flex flex-col">
-                      {cat.items.map(item => (
-                        <NavLink key={item.id} item={item} isNested onClickCallback={onNavClick} />
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
+        {renderNavList(onNavClick)}
       </div>
     </>
   )
@@ -232,7 +256,7 @@ export const ProductPreviewPage: React.FC = () => {
       <header className="sticky top-0 z-50 flex h-14 items-center justify-between border-b bg-background/90 px-4 md:px-6 backdrop-blur-md">
         <div className="flex items-center gap-2 md:gap-4">
           <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-            <SheetTrigger asChild>
+            <SheetTrigger>
               <Button variant="ghost" size="icon" className="lg:hidden text-foreground mr-1" aria-label="Abrir menu">
                 <Menu className="h-5 w-5" />
               </Button>
@@ -253,10 +277,11 @@ export const ProductPreviewPage: React.FC = () => {
           </div>
         </div>
         <div className="flex items-center gap-3 md:gap-4">
+          <LanguageSwitcher />
           <Badge variant="secondary" className="bg-primary/10 text-primary hover:bg-primary/20 border-primary/20 rounded-full px-2 py-0.5 text-[11px] font-medium hidden sm:flex">
             v0.1.0
           </Badge>
-          <button 
+          <button
             onClick={toggleTheme}
             className="flex items-center justify-center w-8 h-8 border rounded-md bg-card text-muted-foreground hover:border-primary/40 hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-primary transition-all active:scale-95"
             aria-label="Alternar tema claro/escuro"
@@ -267,8 +292,23 @@ export const ProductPreviewPage: React.FC = () => {
       </header>
 
       <div className="flex flex-1">
+        {/* Desktop sidebar — usa ref no scroll para preservar posição ao mudar seção */}
         <aside className="w-[240px] border-r bg-card hidden lg:flex flex-col h-[calc(100vh-3.5rem)] sticky top-14 flex-shrink-0 overflow-hidden">
-          <NavigationContent />
+          <div className="p-4 border-b border-border/20">
+            <button
+              onClick={() => setIsCommandOpen(true)}
+              className="inline-flex w-full items-center justify-between whitespace-nowrap rounded-md border border-border/50 bg-background/50 px-3 py-2 text-[13px] font-medium text-muted-foreground shadow-sm transition-colors hover:bg-muted/50 hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            >
+              <span className="flex items-center gap-2"><Search className="h-4 w-4" />Buscar...</span>
+              <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
+                <span className="text-xs">⌘</span>K
+              </kbd>
+            </button>
+          </div>
+          {/* ref={sidebarScrollRef} — elemento estável, não desmonta entre re-renders */}
+          <div ref={sidebarScrollRef} className="flex-1 overflow-y-auto py-4 custom-scrollbar">
+            {renderNavList()}
+          </div>
         </aside>
 
         <main className="flex-1 overflow-y-auto relative w-full overflow-x-hidden custom-scrollbar">

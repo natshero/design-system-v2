@@ -1,51 +1,77 @@
 import React from 'react'
 
-// Import Sections
+// Overview
 import { IntroducaoSection } from './Overview/IntroducaoSection'
-import { GettingStartedSection } from './GettingStarted/GettingStartedSection'
-import { CoresGradientesSection } from './Foundations/CoresGradientesSection'
-import { TipografiaSection } from './Foundations/TipografiaSection'
-import { SuperficiesFormasSection } from './Foundations/SuperficiesFormasSection'
-import { EspacamentoSection } from './Foundations/EspacamentoSection'
+
+// Getting Started (3 seções separadas — fiel a docs/mi-tool)
+import { InstalacaoSection }  from './GettingStarted/InstalacaoSection'
+import { ConfiguracaoSection } from './GettingStarted/ConfiguracaoSection'
+import { UsoBasicoSection }   from './GettingStarted/UsoBasicoSection'
+
+// Foundations (6 seções — fiel a docs/mi-tool)
+import { CoresSection }        from './Foundations/CoresSection'
+import { GradienteSection }    from './Foundations/GradienteSection'
+import { TipografiaSection }   from './Foundations/TipografiaSection'
+import { EspacamentoSection }  from './Foundations/EspacamentoSection'
+import { SombrasSection }      from './Foundations/SombrasSection'
+import { BorderRadiusSection } from './Foundations/BorderRadiusSection'
+
+// Components
 import { ComponentRenderer } from './Components/ComponentRenderer'
+
+// Charts
 import { ChartsSection } from './Charts/ChartsSection'
 
 interface SectionRendererProps {
   activeSection: string
   productId?: string
-  navItems: any[]
+  navItems: { id: string; label: string }[]
 }
 
+const CHART_SECTIONS = new Set([
+  'charts-tokens','charts-line','charts-area','charts-bar-simple',
+  'charts-bar','charts-hbar','charts-pie','charts-donut',
+  'charts-funnel','charts-radar','charts-scatter','charts-treemap',
+])
+
 export const SectionRenderer: React.FC<SectionRendererProps> = ({ activeSection, productId, navItems }) => {
-  // Encontrar o item ativo para pegar o label (nome do componente)
   const activeItem = navItems.find(i => i.id === activeSection)
+  const label = activeItem?.label ?? activeSection
 
-  const isChartItem = [
-    'charts-tokens', 'line-chart', 'area-chart', 'bar-simples', 'stacked-bar', 
-    'horizontal-bar', 'pie-chart', 'donut-chart', 'funnel-chart', 'radar-chart', 
-    'scatter-chart', 'treemap-chart'
-  ].includes(activeSection)
-
-  if (isChartItem) {
-    return <ChartsSection activeSection={activeSection} label={activeItem?.label || activeSection} />
+  // Charts
+  if (CHART_SECTIONS.has(activeSection)) {
+    return <ChartsSection activeSection={activeSection} label={label} />
   }
 
   switch (activeSection) {
+    // ── Overview
     case 'introducao':
       return <IntroducaoSection productId={productId} />
-    case 'guia-inicio':
-      return <GettingStartedSection />
-    case 'cores-gradientes':
-      return <CoresGradientesSection />
+
+    // ── Getting Started
+    case 'instalacao':
+      return <InstalacaoSection />
+    case 'configuracao':
+      return <ConfiguracaoSection />
+    case 'uso-basico':
+      return <UsoBasicoSection />
+
+    // ── Foundations
+    case 'cores':
+      return <CoresSection />
+    case 'gradiente':
+      return <GradienteSection />
     case 'tipografia':
       return <TipografiaSection />
-    case 'superficies-formas':
-      return <SuperficiesFormasSection />
     case 'espacamento':
       return <EspacamentoSection />
+    case 'sombras':
+      return <SombrasSection />
+    case 'border-radius':
+      return <BorderRadiusSection />
+
+    // ── Tudo o resto (components) → ComponentRenderer
     default:
-      // Se não for fundação, overview nem chart, trata como um componente
-      return <ComponentRenderer id={activeSection} label={activeItem?.label || activeSection} />
+      return <ComponentRenderer id={activeSection} label={label} />
   }
 }
-
