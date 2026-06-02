@@ -1,15 +1,4 @@
-/*
-  RankMyApp Design System — themes.css
-  Fonte da verdade: docs/*/index.html (HTML estático do produto)
-
-  Mecanismo: html[data-theme="produto"] + .dark/.light
-  Modo padrão por produto:
-    - MI Tool:          Light-first  → .dark é o override
-    - DataRank:         DARK-FIRST   → .light é o override (único!)
-    - Ads Intelligence: Light-first  → .dark é o override
-    - RankCommunity:    Light-first  → .dark é o override (surfaces purple-tinted)
-    - RankMyGEO:        Light-first  → .dark é o override (surfaces verde)
-*/
+/* Shared theme tokens and product-specific overrides for the docs SPA. */
 
 /* ═══════════════════════════════════════════════════════════════════════
    TOKENS COMPARTILHADOS — iguais em todos os produtos

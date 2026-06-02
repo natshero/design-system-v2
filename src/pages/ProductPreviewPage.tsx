@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react'
+import React, { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { applyTheme, removeTheme, getDefaultMode, type ProductId, type ThemeMode } from '@/theme'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
@@ -154,34 +154,62 @@ const navGroups = [
 ]
 
 const allNavItems = navGroups.flatMap(group => {
-  if (group.items) return group.items;
-  if (group.categories) return group.categories.flatMap(cat => cat.items);
-  return [];
-});
+  if (group.items) return group.items
+  if (group.categories) return group.categories.flatMap(cat => cat.items)
+  return []
+})
 
-export const ProductPreviewPage: React.FC = () => {
-  const { productId } = useParams<{ productId: string }>()
+interface NavigationContentProps {
+  onNavClick?: () => void
+  onSearchOpen: () => void
+  renderNavList: (onNavClick?: () => void) => ReactNode
+}
+
+function NavigationContent({
+  onNavClick,
+  onSearchOpen,
+  renderNavList,
+}: NavigationContentProps) {
+  return (
+    <>
+      <div className="p-4 border-b border-border/20">
+        <button
+          onClick={() => {
+            onSearchOpen()
+            onNavClick?.()
+          }}
+          className="inline-flex w-full items-center justify-between whitespace-nowrap rounded-md border border-border/50 bg-background/50 px-3 py-2 text-[13px] font-medium text-muted-foreground shadow-sm transition-colors hover:bg-muted/50 hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+        >
+          <span className="flex items-center gap-2"><Search className="h-4 w-4" />Buscar...</span>
+          <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
+            <span className="text-xs">âŒ˜</span>K
+          </kbd>
+        </button>
+      </div>
+      <div className="flex-1 overflow-y-auto py-4 custom-scrollbar">
+        {renderNavList(onNavClick)}
+      </div>
+    </>
+  )
+}
+
+interface ProductPreviewContentProps {
+  productId: ProductId
+}
+
+function ProductPreviewContent({ productId }: ProductPreviewContentProps) {
   const navigate = useNavigate()
 
-  const [mode, setModeState] = useState<ThemeMode>(() =>
-    getDefaultMode((productId ?? 'mi-tool') as ProductId)
-  )
+  const [mode, setModeState] = useState<ThemeMode>(() => getDefaultMode(productId))
   const [activeSection, setActiveSection] = useState('introducao')
   const [isCommandOpen, setIsCommandOpen] = useState(false)
   const [isSheetOpen, setIsSheetOpen] = useState(false)
 
   // Aplica o tema via applyTheme() sempre que produto ou modo mudar
   useEffect(() => {
-    if (productId) {
-      applyTheme(productId as ProductId, mode, { persist: false })
-    }
+    applyTheme(productId, mode, { persist: false })
     return () => removeTheme()
   }, [productId, mode])
-
-  // Reseta o modo ao navegar entre produtos
-  useEffect(() => {
-    setModeState(getDefaultMode((productId ?? 'mi-tool') as ProductId))
-  }, [productId])
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -202,11 +230,6 @@ export const ProductPreviewPage: React.FC = () => {
 
   // ref para preservar scroll do sidebar desktop entre re-renders
   const sidebarScrollRef = useRef<HTMLDivElement>(null)
-
-  // Restaura scroll após mudança de seção (evita reset ao clicar)
-  useEffect(() => {
-    // Não faz nada — o ref garante que o DOM não é desmontado
-  }, [activeSection])
 
   // NavLink como arrow function estável dentro do escopo
   const renderNavLink = (
@@ -265,26 +288,6 @@ export const ProductPreviewPage: React.FC = () => {
     </>
   )
 
-  // Conteúdo do sidebar para o Sheet (mobile) — pode re-renderizar normalmente
-  const NavigationContent = ({ onNavClick }: { onNavClick?: () => void }) => (
-    <>
-      <div className="p-4 border-b border-border/20">
-        <button
-          onClick={() => { setIsCommandOpen(true); onNavClick?.() }}
-          className="inline-flex w-full items-center justify-between whitespace-nowrap rounded-md border border-border/50 bg-background/50 px-3 py-2 text-[13px] font-medium text-muted-foreground shadow-sm transition-colors hover:bg-muted/50 hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-        >
-          <span className="flex items-center gap-2"><Search className="h-4 w-4" />Buscar...</span>
-          <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
-            <span className="text-xs">⌘</span>K
-          </kbd>
-        </button>
-      </div>
-      <div className="flex-1 overflow-y-auto py-4 custom-scrollbar">
-        {renderNavList(onNavClick)}
-      </div>
-    </>
-  )
-
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors duration-300">
       <header className="sticky top-0 z-50 flex h-14 items-center justify-between border-b bg-background/90 px-4 md:px-6 backdrop-blur-md">
@@ -296,7 +299,11 @@ export const ProductPreviewPage: React.FC = () => {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-[260px] p-0 flex flex-col bg-card border-r">
-              <NavigationContent onNavClick={() => setIsSheetOpen(false)} />
+              <NavigationContent
+                onNavClick={() => setIsSheetOpen(false)}
+                onSearchOpen={() => setIsCommandOpen(true)}
+                renderNavList={renderNavList}
+              />
             </SheetContent>
           </Sheet>
           <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="h-8 w-8 -ml-2 text-primary hidden md:flex" aria-label="Voltar">
@@ -394,4 +401,11 @@ export const ProductPreviewPage: React.FC = () => {
       </CommandDialog>
     </div>
   )
+}
+
+export const ProductPreviewPage: React.FC = () => {
+  const { productId } = useParams<{ productId: string }>()
+  const resolvedProductId = (productId ?? 'mi-tool') as ProductId
+
+  return <ProductPreviewContent key={resolvedProductId} productId={resolvedProductId} />
 }

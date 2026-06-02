@@ -72,7 +72,7 @@ import {
   Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList,
 } from '@/components/ui/command'
 import {
-  ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuLabel,
+  ContextMenu, ContextMenuContent, ContextMenuItem,
   ContextMenuSeparator, ContextMenuShortcut, ContextMenuTrigger,
 } from '@/components/ui/context-menu'
 import {
@@ -121,7 +121,7 @@ import {
   TrendingUp, TrendingDown, Minus, Star, Trash2,
   ChevronRight, Home, User, Bell, ArrowUpRight, ArrowDownRight,
   Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight,
-  Search, Globe, Mail, Phone, MapPin, Copy, Edit2, ExternalLink,
+  Search, Globe, Mail, Phone, Copy, Edit2, ExternalLink,
   ChevronDown, Package, BarChart2, Users, Zap,
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -235,7 +235,6 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({ id, label,
   const [toggled, setToggled] = useState(false)
   const [sliderVal, setSliderVal] = useState([50])
   const [commandOpen, setCommandOpen] = useState(false)
-  const [progressVal] = useState(68)
 
   const breadcrumb = (
     <div className="text-[11px] font-mono tracking-wider text-muted-foreground uppercase flex gap-2">

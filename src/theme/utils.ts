@@ -66,15 +66,19 @@ export function applyTheme(
   // Aplica a classe de modo
   if (isDarkFirst) {
     // Dark-first: sem classe = dark | .light = claro
-    resolvedMode === 'light'
-      ? html.classList.add('light')
-      : html.classList.remove('light')
+    if (resolvedMode === 'light') {
+      html.classList.add('light')
+    } else {
+      html.classList.remove('light')
+    }
     html.classList.remove('dark')
   } else {
     // Light-first: sem classe = light | .dark = escuro
-    resolvedMode === 'dark'
-      ? html.classList.add('dark')
-      : html.classList.remove('dark')
+    if (resolvedMode === 'dark') {
+      html.classList.add('dark')
+    } else {
+      html.classList.remove('dark')
+    }
     html.classList.remove('light')
   }
 
