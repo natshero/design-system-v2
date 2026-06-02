@@ -31,7 +31,7 @@ import {
   DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
 } from '@/components/ui/dialog'
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
+  DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem,
   DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
   DropdownMenuCheckboxItem, DropdownMenuSub, DropdownMenuSubContent,
   DropdownMenuSubTrigger,
@@ -65,11 +65,11 @@ import {
   Collapsible, CollapsibleContent, CollapsibleTrigger,
 } from '@/components/ui/collapsible'
 import {
-  Combobox, ComboboxCollection, ComboboxContent, ComboboxEmpty,
+  Combobox, ComboboxContent, ComboboxEmpty,
   ComboboxInput, ComboboxItem, ComboboxList,
 } from '@/components/ui/combobox'
 import {
-  CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList,
+  Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList,
 } from '@/components/ui/command'
 import {
   ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuLabel,
@@ -452,13 +452,11 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({ id, label,
               <ComboboxInput placeholder="Buscar produto..." showClear />
               <ComboboxContent>
                 <ComboboxList>
-                  <ComboboxCollection>
-                    <ComboboxItem value="mi-tool">MI Tool</ComboboxItem>
-                    <ComboboxItem value="datarank">DataRank</ComboboxItem>
-                    <ComboboxItem value="ads">Ads Intelligence</ComboboxItem>
-                    <ComboboxItem value="geo">RankMyGEO</ComboboxItem>
-                    <ComboboxItem value="community">Rank Community</ComboboxItem>
-                  </ComboboxCollection>
+                  <ComboboxItem value="mi-tool">MI Tool</ComboboxItem>
+                  <ComboboxItem value="datarank">DataRank</ComboboxItem>
+                  <ComboboxItem value="ads">Ads Intelligence</ComboboxItem>
+                  <ComboboxItem value="geo">RankMyGEO</ComboboxItem>
+                  <ComboboxItem value="community">Rank Community</ComboboxItem>
                   <ComboboxEmpty>Nenhum produto encontrado.</ComboboxEmpty>
                 </ComboboxList>
               </ComboboxContent>
@@ -552,7 +550,7 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({ id, label,
       </PreviewBox>
       <SectionTitle>ToggleGroup — alinhamento</SectionTitle>
       <PreviewBox>
-        <ToggleGroup type="single" defaultValue="left">
+        <ToggleGroup defaultValue={['left']}>
           <ToggleGroupItem value="left" aria-label="Alinhar à esquerda"><AlignLeft size={15} /></ToggleGroupItem>
           <ToggleGroupItem value="center" aria-label="Centralizar"><AlignCenter size={15} /></ToggleGroupItem>
           <ToggleGroupItem value="right" aria-label="Alinhar à direita"><AlignRight size={15} /></ToggleGroupItem>
@@ -560,7 +558,7 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({ id, label,
       </PreviewBox>
       <SectionTitle>ToggleGroup — múltipla seleção</SectionTitle>
       <PreviewBox>
-        <ToggleGroup type="multiple">
+        <ToggleGroup>
           <ToggleGroupItem value="bold"><Bold size={15} /></ToggleGroupItem>
           <ToggleGroupItem value="italic"><Italic size={15} /></ToggleGroupItem>
           <ToggleGroupItem value="underline"><Underline size={15} /></ToggleGroupItem>
@@ -580,7 +578,7 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({ id, label,
               <Label>Volume</Label>
               <span className="text-primary font-mono font-medium">{sliderVal[0]}%</span>
             </div>
-            <Slider value={sliderVal} onValueChange={setSliderVal} min={0} max={100} />
+            <Slider value={sliderVal} onValueChange={(v) => setSliderVal(Array.isArray(v) ? [...v] as number[] : [v as number])} min={0} max={100} />
           </div>
           <div>
             <Label className="text-[13px] mb-3 block">Desabilitado</Label>
@@ -723,21 +721,23 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({ id, label,
       <SectionTitle>Command palette embutido</SectionTitle>
       <PreviewBox center={false}>
         <div className="border rounded-lg overflow-hidden max-w-sm w-full">
-          <CommandList className="max-h-72">
+          <Command>
             <CommandInput placeholder="Buscar componente ou seção..." />
-            <CommandEmpty>Nenhum resultado.</CommandEmpty>
-            <CommandGroup heading="Componentes">
-              <CommandItem>Button</CommandItem>
-              <CommandItem>Input</CommandItem>
-              <CommandItem>Select</CommandItem>
-              <CommandItem>Checkbox</CommandItem>
-            </CommandGroup>
-            <CommandGroup heading="Foundations">
-              <CommandItem>Cores</CommandItem>
-              <CommandItem>Tipografia</CommandItem>
-              <CommandItem>Espaçamento</CommandItem>
-            </CommandGroup>
-          </CommandList>
+            <CommandList className="max-h-72">
+              <CommandEmpty>Nenhum resultado.</CommandEmpty>
+              <CommandGroup heading="Componentes">
+                <CommandItem>Button</CommandItem>
+                <CommandItem>Input</CommandItem>
+                <CommandItem>Select</CommandItem>
+                <CommandItem>Checkbox</CommandItem>
+              </CommandGroup>
+              <CommandGroup heading="Foundations">
+                <CommandItem>Cores</CommandItem>
+                <CommandItem>Tipografia</CommandItem>
+                <CommandItem>Espaçamento</CommandItem>
+              </CommandGroup>
+            </CommandList>
+          </Command>
         </div>
       </PreviewBox>
       <SectionTitle>Via Dialog (⌘K)</SectionTitle>
@@ -899,7 +899,7 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({ id, label,
       <SectionTitle>FAQ</SectionTitle>
       <PreviewBox center={false}>
         <div className="max-w-lg w-full">
-          <Accordion openMultiple={false}>
+          <Accordion multiple={false}>
             {[
               { value: 'q1', question: 'O que é ASO?', answer: 'App Store Optimization é o processo de otimizar aplicativos móveis para ranquear melhor nos resultados de busca das lojas de apps.' },
               { value: 'q2', question: 'Como funciona o rastreamento de keywords?', answer: 'O RankMyApp monitora a posição do seu app para palavras-chave específicas em diferentes países e plataformas em tempo real.' },
@@ -1496,10 +1496,11 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({ id, label,
         <DropdownMenu>
           <DropdownMenuTrigger><Button variant="outline">Opções <MoreHorizontal className="ml-2 size-4" /></Button></DropdownMenuTrigger>
           <DropdownMenuContent className="w-48">
-            <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="gap-2"><User size={14} />Perfil</DropdownMenuItem>
-            <DropdownMenuItem className="gap-2"><Settings size={14} />Configurações</DropdownMenuItem>
+            <DropdownMenuGroup>
+              <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
+              <DropdownMenuItem className="gap-2"><User size={14} />Perfil</DropdownMenuItem>
+              <DropdownMenuItem className="gap-2"><Settings size={14} />Configurações</DropdownMenuItem>
+            </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="gap-2 text-error focus:text-error focus:bg-error/8"><Trash2 size={14} />Excluir conta</DropdownMenuItem>
           </DropdownMenuContent>
@@ -1545,7 +1546,7 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({ id, label,
       <SectionTitle>Confirmação de ação destrutiva</SectionTitle>
       <PreviewBox>
         <AlertDialog>
-          <AlertDialogTrigger><Button variant="destructive">Excluir conta</Button></AlertDialogTrigger>
+          <AlertDialogTrigger render={<Button variant="destructive" />}>Excluir conta</AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
@@ -1561,7 +1562,7 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({ id, label,
       <SectionTitle>Confirmação simples</SectionTitle>
       <PreviewBox>
         <AlertDialog>
-          <AlertDialogTrigger><Button variant="outline">Publicar relatório</Button></AlertDialogTrigger>
+          <AlertDialogTrigger render={<Button variant="outline" />}>Publicar relatório</AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Publicar relatório?</AlertDialogTitle>
@@ -1606,7 +1607,7 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({ id, label,
       <SectionTitle>Bottom sheet (mobile)</SectionTitle>
       <PreviewBox>
         <Drawer>
-          <DrawerTrigger><Button variant="outline">Abrir Drawer</Button></DrawerTrigger>
+          <DrawerTrigger asChild><Button variant="outline">Abrir Drawer</Button></DrawerTrigger>
           <DrawerContent>
             <DrawerHeader><DrawerTitle>Filtros</DrawerTitle><DrawerDescription>Configure os filtros de busca de keywords.</DrawerDescription></DrawerHeader>
             <div className="px-4 space-y-4">
@@ -1619,7 +1620,7 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({ id, label,
             </div>
             <DrawerFooter>
               <Button>Aplicar filtros</Button>
-              <DrawerClose><Button variant="outline">Cancelar</Button></DrawerClose>
+              <DrawerClose asChild><Button variant="outline">Cancelar</Button></DrawerClose>
             </DrawerFooter>
           </DrawerContent>
         </Drawer>
@@ -1633,9 +1634,7 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({ id, label,
       <SectionTitle>Preview ao hover</SectionTitle>
       <PreviewBox>
         <HoverCard>
-          <HoverCardTrigger>
-            <Button variant="link">@rankmyapp</Button>
-          </HoverCardTrigger>
+          <HoverCardTrigger render={<Button variant="link" />}>@rankmyapp</HoverCardTrigger>
           <HoverCardContent>
             <div className="flex gap-3">
               <Avatar className="size-10">
@@ -1656,9 +1655,7 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({ id, label,
       <SectionTitle>Card de produto</SectionTitle>
       <PreviewBox>
         <HoverCard>
-          <HoverCardTrigger>
-            <Badge variant="outline" className="cursor-pointer hover:border-primary">MI Tool v2.1.0</Badge>
-          </HoverCardTrigger>
+          <HoverCardTrigger render={<Badge variant="outline" className="cursor-pointer hover:border-primary" />}>MI Tool v2.1.0</HoverCardTrigger>
           <HoverCardContent>
             <div className="space-y-2">
               <p className="text-[13px] font-medium">MI Tool — Market Intelligence</p>
@@ -1680,7 +1677,7 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({ id, label,
       <SectionTitle>Painel de filtros</SectionTitle>
       <PreviewBox>
         <Popover>
-          <PopoverTrigger><Button variant="outline"><Search size={14} className="mr-2" />Filtros avançados</Button></PopoverTrigger>
+          <PopoverTrigger render={<Button variant="outline" />}><Search size={14} className="mr-2" />Filtros avançados</PopoverTrigger>
           <PopoverContent className="w-72">
             <div className="space-y-4">
               <p className="text-[14px] font-semibold">Filtros</p>
@@ -1707,7 +1704,7 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({ id, label,
       <SectionTitle>Sheet lateral (right)</SectionTitle>
       <PreviewBox>
         <Sheet>
-          <SheetTrigger><Button variant="outline"><Settings size={14} className="mr-2" />Configurações</Button></SheetTrigger>
+          <SheetTrigger render={<Button variant="outline" />}><Settings size={14} className="mr-2" />Configurações</SheetTrigger>
           <SheetContent side="right">
             <SheetHeader><SheetTitle>Configurações</SheetTitle><SheetDescription>Ajuste as preferências do seu painel.</SheetDescription></SheetHeader>
             <div className="py-4 space-y-4">
@@ -1733,7 +1730,7 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({ id, label,
       <SectionTitle>Sheet bottom</SectionTitle>
       <PreviewBox>
         <Sheet>
-          <SheetTrigger><Button variant="outline">Abrir bottom sheet</Button></SheetTrigger>
+          <SheetTrigger render={<Button variant="outline" />}>Abrir bottom sheet</SheetTrigger>
           <SheetContent side="bottom">
             <SheetHeader><SheetTitle>Exportar dados</SheetTitle><SheetDescription>Escolha o formato de exportação.</SheetDescription></SheetHeader>
             <div className="py-4 grid grid-cols-3 gap-3">
@@ -1777,7 +1774,7 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({ id, label,
       {breadcrumb}{header}
       <SectionTitle>Painel redimensionável horizontal</SectionTitle>
       <PreviewBox center={false}>
-        <ResizablePanelGroup direction="horizontal" className="h-40 rounded-lg border border-border overflow-hidden w-full">
+        <ResizablePanelGroup direction={"horizontal" as const} className="h-40 rounded-lg border border-border overflow-hidden w-full">
           <ResizablePanel defaultSize={30} minSize={20}>
             <div className="h-full p-4 flex flex-col gap-2" style={{ background: 'var(--sidebar-bg)' }}>
               <span className="text-[11px] text-muted-foreground uppercase tracking-wider">Sidebar</span>
@@ -1797,7 +1794,7 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({ id, label,
       </PreviewBox>
       <SectionTitle>Vertical</SectionTitle>
       <PreviewBox center={false}>
-        <ResizablePanelGroup direction="vertical" className="h-48 rounded-lg border border-border overflow-hidden w-full">
+        <ResizablePanelGroup direction={"vertical" as const} className="h-48 rounded-lg border border-border overflow-hidden w-full">
           <ResizablePanel defaultSize={40}>
             <div className="h-full p-4 bg-card"><Skeleton className="h-3 w-1/2 mb-2" /><Skeleton className="h-16 rounded" /></div>
           </ResizablePanel>
@@ -1817,10 +1814,10 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({ id, label,
       <PreviewBox>
         <ScrollArea className="h-56 w-72 rounded-md border p-4">
           <div className="space-y-2">
-            {Array.from({ length: 20 }, (_, i) => (
+            {[12,8,45,3,27,19,6,33,41,2,15,38,7,22,49,11,30,5,17,44].map((vol, i) => (
               <div key={i} className="flex items-center justify-between py-1.5 border-b border-border/40 last:border-0">
                 <span className="text-[13px] text-foreground">keyword-{String(i + 1).padStart(2, '0')}</span>
-                <Badge variant="secondary" className="text-[11px]">{Math.floor(Math.random() * 50000 / 1000)}K</Badge>
+                <Badge variant="secondary" className="text-[11px]">{vol}K</Badge>
               </div>
             ))}
           </div>
