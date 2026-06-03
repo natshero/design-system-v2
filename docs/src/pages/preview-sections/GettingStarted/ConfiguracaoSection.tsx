@@ -62,7 +62,7 @@ export const ConfiguracaoSection: React.FC = () => (
       </p>
       <CodeBlock filename="main.tsx">
 {`// Importa src/styles/themes.css — CSS vars de todos os produtos
-import '@rankmyapp/ds/styles'
+import '@natshero/rankmyapp-ds/styles'
 
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
@@ -86,7 +86,7 @@ createRoot(document.getElementById('root')!).render(
         O <code className="font-mono text-primary text-[12px]">DSThemeProvider</code> gerencia automaticamente as variáveis de CSS para o produto selecionado:
       </p>
       <CodeBlock filename="App.tsx">
-{`import { DSThemeProvider } from '@rankmyapp/ds/theme'
+{`import { DSThemeProvider } from '@natshero/rankmyapp-ds/theme'
 import { RouterProvider } from 'react-router-dom'
 import { router } from './router'
 

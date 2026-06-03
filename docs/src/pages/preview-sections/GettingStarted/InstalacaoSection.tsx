@@ -62,10 +62,10 @@ export const InstalacaoSection: React.FC = () => (
       </h2>
       <CodeBlock filename="terminal">
 {`# Via pnpm (recomendado)
-pnpm add @rankmyapp/ds
+pnpm add @natshero/rankmyapp-ds
 
 # Via npm
-npm install @rankmyapp/ds`}
+npm install @natshero/rankmyapp-ds`}
       </CodeBlock>
     </div>
 
@@ -77,7 +77,7 @@ npm install @rankmyapp/ds`}
         O DS é hospedado no GitHub Packages (registro privado). Crie o arquivo na raiz do projeto:
       </p>
       <CodeBlock filename=".npmrc">
-{`@rankmyapp:registry=https://npm.pkg.github.com
+{`@natshero:registry=https://npm.pkg.github.com
 //npm.pkg.github.com/:_authToken=\${GITHUB_TOKEN}`}
       </CodeBlock>
       <Callout type="info">
@@ -93,7 +93,7 @@ npm install @rankmyapp/ds`}
       </h2>
       <CodeBlock filename="terminal">
 {`# Confirmar versão instalada
-node -e "const p = require('@rankmyapp/ds/package.json'); console.log('v' + p.version)"`}
+node -e "const p = require('@natshero/rankmyapp-ds/package.json'); console.log('v' + p.version)"`}
       </CodeBlock>
     </div>
 

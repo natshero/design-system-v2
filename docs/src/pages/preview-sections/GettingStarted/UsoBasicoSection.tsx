@@ -41,7 +41,7 @@ export const UsoBasicoSection: React.FC = () => {
           Uso Básico
         </h1>
         <p className="text-[17px] text-muted-foreground max-w-[640px] leading-relaxed">
-          Importe componentes de <code className="font-mono text-primary">@rankmyapp/ds</code> e
+          Importe componentes de <code className="font-mono text-primary">@natshero/rankmyapp-ds</code> e
           construa interfaces com os tokens do tema ativo.
         </p>
       </div>
@@ -59,7 +59,7 @@ export const UsoBasicoSection: React.FC = () => {
   Button,
   Input, Label,
   Card, CardHeader, CardTitle, CardContent, CardFooter,
-} from '@rankmyapp/ds'
+} from '@natshero/rankmyapp-ds'
 
 export function NovaAnalise() {
   return (
