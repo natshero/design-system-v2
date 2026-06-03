@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "RankMyApp Design System — componentes, tokens e identidade visual",
   "private": false,
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
   "type": "module",
   "main": "./dist/rankmyapp-ds.umd.cjs",
   "module": "./dist/rankmyapp-ds.es.js",
@@ -31,6 +34,7 @@
     "build": "npm run build:lib",
     "build:lib": "vite build --config vite.lib.config.ts && tsc --project tsconfig.lib.json && tsc --project tsconfig.exports.json && node scripts/copy-package-assets.mjs",
     "build:docs": "tsc --project tsconfig.docs.json && vite build --config vite.docs.config.ts",
+    "prepublishOnly": "npm run build:lib",
     "lint": "eslint .",
     "preview": "vite preview --config vite.docs.config.ts"
   },
