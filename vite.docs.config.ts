@@ -43,15 +43,7 @@ export default defineConfig({
           }
 
           if (normalizedId.includes("/node_modules/recharts/")) {
-            const [, rechartsSubpath = "core"] =
-              normalizedId.split("/node_modules/recharts/");
-            const cleanSubpath = rechartsSubpath.startsWith("es6/")
-              ? rechartsSubpath.slice(4)
-              : rechartsSubpath.startsWith("lib/")
-                ? rechartsSubpath.slice(4)
-                : rechartsSubpath;
-            const rechartsSegment = cleanSubpath.split("/")[0] || "core";
-            return `recharts-${rechartsSegment}`;
+            return "recharts-vendor";
           }
 
           if (normalizedId.includes("/node_modules/@base-ui/react/")) {
