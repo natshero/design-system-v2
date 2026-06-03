@@ -79,60 +79,31 @@ createRoot(document.getElementById('root')!).render(
       <div className="flex items-center gap-3">
         <span className="size-6 rounded-full bg-primary/15 text-primary text-[12px] font-bold flex items-center justify-center shrink-0">2</span>
         <h2 className="text-[22px] font-semibold font-display text-foreground">
-          Aplicar o tema do produto
+          Envolver o app com o ThemeProvider
         </h2>
       </div>
       <p className="text-[14px] text-muted-foreground pl-9">
-        O tema é controlado por <code className="font-mono text-primary text-[12px]">data-theme</code> no elemento{' '}
-        <code className="font-mono text-primary text-[12px]">&lt;html&gt;</code> + classe{' '}
-        <code className="font-mono text-primary text-[12px]">.dark</code> ou{' '}
-        <code className="font-mono text-primary text-[12px]">.light</code> para o modo:
+        O <code className="font-mono text-primary text-[12px]">DSThemeProvider</code> gerencia automaticamente as variáveis de CSS para o produto selecionado:
       </p>
       <CodeBlock filename="App.tsx">
-{`import { useEffect, useState } from 'react'
-
-// Modos por produto:
-//   dark-first  → MI Tool, DataRank, Ads, GEO  (padrão = dark, .light = override)
-//   light-first → Rank Community               (padrão = light, .dark = override)
-const DARK_FIRST = ['mi-tool', 'datarank', 'ads-intelligence', 'rankmygeo']
+{`import { DSThemeProvider } from '@rankmyapp/ds/theme'
+import { RouterProvider } from 'react-router-dom'
+import { router } from './router'
 
 export function App() {
-  const [isDark, setIsDark] = useState(true) // MI Tool começa dark
-
-  useEffect(() => {
-    const html = document.documentElement
-
-    // 1. Ativa o tema do produto via data-theme
-    html.setAttribute('data-theme', 'mi-tool')
-
-    // 2. Define o modo (dark-first: sem classe = dark)
-    if (isDark) {
-      html.classList.remove('light')
-    } else {
-      html.classList.add('light')
-    }
-
-    return () => {
-      html.removeAttribute('data-theme')
-      html.classList.remove('dark', 'light')
-    }
-  }, [isDark])
-
   return (
-    <>
+    // 'mi-tool', 'datarank', 'ads-intelligence', etc.
+    <DSThemeProvider product="mi-tool" respectSystem={true}>
       <RouterProvider router={router} />
-      <button onClick={() => setIsDark(d => !d)}>
-        Modo {isDark ? 'claro' : 'escuro'}
-      </button>
-    </>
+    </DSThemeProvider>
   )
 }`}
       </CodeBlock>
       <Callout type="info">
-        Não existe um <code className="font-mono text-foreground bg-muted px-1 rounded text-[12px]">ThemeProvider</code> exportado
-        pelo DS. O sistema é baseado em CSS variables nativas — basta controlar o atributo{' '}
-        <code className="font-mono text-foreground bg-muted px-1 rounded text-[12px]">data-theme</code> e a
-        classe <code className="font-mono text-foreground bg-muted px-1 rounded text-[12px]">.dark / .light</code>.
+        O <code className="font-mono text-foreground bg-muted px-1 rounded text-[12px]">DSThemeProvider</code> aplica o atributo{' '}
+        <code className="font-mono text-foreground bg-muted px-1 rounded text-[12px]">data-theme</code> no{' '}
+        <code className="font-mono text-foreground bg-muted px-1 rounded text-[12px]">&lt;html&gt;</code> e cuida das classes{' '}
+        <code className="font-mono text-foreground bg-muted px-1 rounded text-[12px]">.dark / .light</code> nativamente, além de persistir a escolha no localStorage se configurado.
       </Callout>
     </div>
 
@@ -141,24 +112,20 @@ export function App() {
       <div className="flex items-center gap-3">
         <span className="size-6 rounded-full bg-primary/15 text-primary text-[12px] font-bold flex items-center justify-center shrink-0">3</span>
         <h2 className="text-[22px] font-semibold font-display text-foreground">
-          Configurar Tailwind
+          Tailwind v4
         </h2>
       </div>
       <p className="text-[14px] text-muted-foreground pl-9">
-        Use o preset do DS para herdar automaticamente os tokens, breakpoints e famílias de fonte:
+        O DS usa Tailwind CSS v4 nativo. Não é mais necessário configurar o <code className="font-mono text-[12px]">tailwind.config.ts</code>! O app consumidor só precisa importar o Tailwind em seu próprio CSS:
       </p>
-      <CodeBlock filename="tailwind.config.ts">
-{`import { tailwindPreset } from '@rankmyapp/ds/tailwind'
-import type { Config } from 'tailwindcss'
+      <CodeBlock filename="index.css">
+{`/* CSS Global da sua aplicação (index.css) */
+@import "tailwindcss";
 
-export default {
-  presets: [tailwindPreset],
-  content: [
-    './src/**/*.{ts,tsx}',
-    // Necessário para incluir as classes usadas nos componentes do DS
-    './node_modules/@rankmyapp/ds/dist/**/*.js',
-  ],
-} satisfies Config`}
+/* Opcional: Se precisar criar variáveis específicas só do seu app */
+@theme {
+  --color-brand-custom: #123456;
+}`}
       </CodeBlock>
     </div>
 

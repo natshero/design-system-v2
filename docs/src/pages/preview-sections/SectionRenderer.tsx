@@ -1,17 +1,29 @@
 import React from 'react'
-import { ChartsSection } from './Charts/ChartsSection'
-import { ComponentRenderer } from './Components/ComponentRenderer'
-import { BorderRadiusSection } from './Foundations/BorderRadiusSection'
-import { CoresSection } from './Foundations/CoresSection'
-import { EspacamentoSection } from './Foundations/EspacamentoSection'
-import { GradienteSection } from './Foundations/GradienteSection'
-import { SombrasSection } from './Foundations/SombrasSection'
-import { TipografiaSection } from './Foundations/TipografiaSection'
-import { ConfiguracaoSection } from './GettingStarted/ConfiguracaoSection'
-import { InstalacaoSection } from './GettingStarted/InstalacaoSection'
-import { UsoBasicoSection } from './GettingStarted/UsoBasicoSection'
+
+// Overview
 import { IntroducaoSection } from './Overview/IntroducaoSection'
+
+// Getting Started (3 seções separadas — fiel a docs/mi-tool)
+import { InstalacaoSection }  from './GettingStarted/InstalacaoSection'
+import { ConfiguracaoSection } from './GettingStarted/ConfiguracaoSection'
+import { UsoBasicoSection }   from './GettingStarted/UsoBasicoSection'
+
+// Foundations (6 seções — fiel a docs/mi-tool)
+import { CoresSection }        from './Foundations/CoresSection'
+import { GradienteSection }    from './Foundations/GradienteSection'
+import { TipografiaSection }   from './Foundations/TipografiaSection'
+import { EspacamentoSection }  from './Foundations/EspacamentoSection'
+import { SombrasSection }      from './Foundations/SombrasSection'
+import { BorderRadiusSection } from './Foundations/BorderRadiusSection'
+
+// Components
+import { ComponentRenderer } from './Components/ComponentRenderer'
+
+// Patterns
 import { PatternsRenderer } from './Patterns/PatternsRenderer'
+
+// Charts
+import { ChartsSection } from './Charts/ChartsSection'
 
 interface SectionRendererProps {
   activeSection: string
@@ -20,78 +32,58 @@ interface SectionRendererProps {
 }
 
 const CHART_SECTIONS = new Set([
-  'charts-tokens',
-  'charts-line',
-  'charts-area',
-  'charts-bar-simple',
-  'charts-bar',
-  'charts-hbar',
-  'charts-pie',
-  'charts-donut',
-  'charts-funnel',
-  'charts-radar',
-  'charts-scatter',
-  'charts-treemap',
+  'charts-tokens','charts-line','charts-area','charts-bar-simple',
+  'charts-bar','charts-hbar','charts-pie','charts-donut',
+  'charts-funnel','charts-radar','charts-scatter','charts-treemap',
 ])
 
 const PATTERN_SECTIONS = new Set([
-  'metric-card',
-  'datatable',
-  'appshell',
-  'page-header',
+  'metric-card','datatable','appshell','page-header',
 ])
 
-export const SectionRenderer: React.FC<SectionRendererProps> = ({
-  activeSection,
-  productId,
-  navItems,
-}) => {
-  const activeItem = navItems.find((item) => item.id === activeSection)
+export const SectionRenderer: React.FC<SectionRendererProps> = ({ activeSection, productId, navItems }) => {
+  const activeItem = navItems.find(i => i.id === activeSection)
   const label = activeItem?.label ?? activeSection
 
-  let content: React.ReactNode
-
+  // Charts
   if (CHART_SECTIONS.has(activeSection)) {
-    content = <ChartsSection activeSection={activeSection} label={label} />
-  } else if (PATTERN_SECTIONS.has(activeSection)) {
-    content = <PatternsRenderer id={activeSection} label={label} />
-  } else {
-    switch (activeSection) {
-      case 'introducao':
-        content = <IntroducaoSection productId={productId} />
-        break
-      case 'instalacao':
-        content = <InstalacaoSection />
-        break
-      case 'configuracao':
-        content = <ConfiguracaoSection />
-        break
-      case 'uso-basico':
-        content = <UsoBasicoSection />
-        break
-      case 'cores':
-        content = <CoresSection />
-        break
-      case 'gradiente':
-        content = <GradienteSection />
-        break
-      case 'tipografia':
-        content = <TipografiaSection />
-        break
-      case 'espacamento':
-        content = <EspacamentoSection />
-        break
-      case 'sombras':
-        content = <SombrasSection />
-        break
-      case 'border-radius':
-        content = <BorderRadiusSection />
-        break
-      default:
-        content = <ComponentRenderer id={activeSection} label={label} />
-        break
-    }
+    return <ChartsSection activeSection={activeSection} label={label} />
   }
 
-  return <>{content}</>
+  // Patterns
+  if (PATTERN_SECTIONS.has(activeSection)) {
+    return <PatternsRenderer id={activeSection} label={label} />
+  }
+
+  switch (activeSection) {
+    // ── Overview
+    case 'introducao':
+      return <IntroducaoSection productId={productId} />
+
+    // ── Getting Started
+    case 'instalacao':
+      return <InstalacaoSection />
+    case 'configuracao':
+      return <ConfiguracaoSection />
+    case 'uso-basico':
+      return <UsoBasicoSection />
+
+    // ── Foundations
+    case 'cores':
+      return <CoresSection />
+    case 'gradiente':
+      return <GradienteSection />
+    case 'tipografia':
+      return <TipografiaSection />
+    case 'espacamento':
+      return <EspacamentoSection />
+    case 'sombras':
+      return <SombrasSection />
+    case 'border-radius':
+      return <BorderRadiusSection />
+
+    // ── Tudo o resto (components) → ComponentRenderer
+    default:
+      return <ComponentRenderer id={activeSection} label={label} />
+  }
 }

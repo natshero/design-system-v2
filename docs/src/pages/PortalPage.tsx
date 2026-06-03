@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Sun, Moon, Smartphone, TrendingUp, Target, Globe, Users, Search } from 'lucide-react'
-import { LanguageSwitcher } from '@docs/components/LanguageSwitcher'
+import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { applyTheme, removeTheme, type ThemeMode } from '@/theme'
 
 // Ícones SVG por produto — sem emojis (skill rule: no-emoji-icons)

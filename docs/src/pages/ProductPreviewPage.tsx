@@ -8,7 +8,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
 import { ArrowLeft, Moon, Sun, Menu, Search } from 'lucide-react'
 import { SectionRenderer } from './preview-sections/SectionRenderer'
-import { LanguageSwitcher } from '@docs/components/LanguageSwitcher'
+import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 
 /**
  * Estrutura de navegação fiel a docs/mi-tool/index.html
@@ -182,7 +182,7 @@ function NavigationContent({
         >
           <span className="flex items-center gap-2"><Search className="h-4 w-4" />Buscar...</span>
           <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
-            <span className="text-xs">Ctrl</span>K
+            <span className="text-xs">âŒ˜</span>K
           </kbd>
         </button>
       </div>
@@ -342,7 +342,7 @@ function ProductPreviewContent({ productId }: ProductPreviewContentProps) {
             >
               <span className="flex items-center gap-2"><Search className="h-4 w-4" />Buscar...</span>
               <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
-                <span className="text-xs">Ctrl</span>K
+                <span className="text-xs">⌘</span>K
               </kbd>
             </button>
           </div>
