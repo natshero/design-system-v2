@@ -1,13 +1,33 @@
-import { useTheme } from "next-themes"
+import * as React from "react"
 import { Toaster as Sonner, type ToasterProps } from "sonner"
 import { CircleCheckIcon, InfoIcon, TriangleAlertIcon, OctagonXIcon, Loader2Icon } from "lucide-react"
 
+function getDocumentTheme(): ToasterProps["theme"] {
+  if (typeof document === "undefined") return "system"
+  return document.documentElement.classList.contains("dark") ? "dark" : "light"
+}
+
 const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme()
+  const [theme, setTheme] = React.useState<ToasterProps["theme"]>(() => getDocumentTheme())
+
+  React.useEffect(() => {
+    if (typeof document === "undefined") return
+
+    const observer = new MutationObserver(() => {
+      setTheme(getDocumentTheme())
+    })
+
+    observer.observe(document.documentElement, {
+      attributeFilter: ["class", "data-theme"],
+      attributes: true,
+    })
+
+    return () => observer.disconnect()
+  }, [])
 
   return (
     <Sonner
-      theme={theme as ToasterProps["theme"]}
+      theme={theme}
       className="toaster group"
       icons={{
         success: (

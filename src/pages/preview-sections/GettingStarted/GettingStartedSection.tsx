@@ -51,27 +51,24 @@ pnpm add @rankmyapp/ds`} />
       </div>
 
       <h2 className="text-[22px] font-bold font-['Space_Grotesk'] mt-12 mb-6 pb-3 border-b border-border/50">3. Importar estilos e ThemeProvider</h2>
-      <CodeBlock language="tsx" title="main.tsx / App.tsx" code={`import '@rankmyapp/ds/styles.css'
-import { ThemeProvider } from '@rankmyapp/ds'
+      <CodeBlock language="tsx" title="main.tsx / App.tsx" code={`import '@rankmyapp/ds/styles'
+import { DSThemeProvider } from '@rankmyapp/ds/theme'
 
 function App() {
   return (
-    <ThemeProvider defaultTheme="dark" storageKey="rankmyapp-theme">
+    <DSThemeProvider product="mi-tool" respectSystem={true} persist={true}>
       <RouterProvider router={router} />
-    </ThemeProvider>
+    </DSThemeProvider>
   )
 }`} />
 
-      <h2 className="text-[22px] font-bold font-['Space_Grotesk'] mt-12 mb-6 pb-3 border-b border-border/50">4. Tailwind Config</h2>
-      <CodeBlock language="javascript" title="tailwind.config.js" code={`import { tailwindPreset } from '@rankmyapp/ds/tailwind'
+      <h2 className="text-[22px] font-bold font-['Space_Grotesk'] mt-12 mb-6 pb-3 border-b border-border/50">4. Tailwind CSS v4</h2>
+      <CodeBlock language="css" title="index.css" code={`@import "tailwindcss";
 
-export default {
-  presets: [tailwindPreset],
-  content: [
-    './src/**/*.{ts,tsx}',
-    './node_modules/@rankmyapp/ds/dist/**/*.js',
-  ],
-}`} />
+/*
+ * O pacote já inclui todas as variáveis e temas no CSS importado no passo 3.
+ * Não é mais necessário criar tailwind.config.ts!
+ */`} />
 
     </section>
   )

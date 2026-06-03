@@ -11,7 +11,10 @@
     "skipLibCheck": true,
     "ignoreDeprecations": "6.0",
     "baseUrl": ".",
-    "paths": { "@/*": ["./src/*"] },
+    "paths": {
+      "@/*": ["./src/*"],
+      "@docs/*": ["./docs/src/*"]
+    },
 
     "rootDir":              "./src",
     "declaration":          true,
@@ -21,10 +24,5 @@
     "outDir":               "./dist/types"
   },
   "include": ["src"],
-  "exclude": [
-    "src/pages",
-    "src/App.tsx",
-    "src/main.tsx",
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }

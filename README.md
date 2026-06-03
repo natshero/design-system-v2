@@ -1,73 +1,126 @@
-# React + TypeScript + Vite
+# RankMyApp Design System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Biblioteca de componentes, tokens e theming multi-brand da RankMyApp, com uma app de documentacao separada para showcase e validacao.
 
-Currently, two official plugins are available:
+## Estrutura
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+`src/`
 
-## React Compiler
+Codigo publicavel da library: componentes, hooks, tema, tokens e entrypoints.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+`docs/`
 
-## Expanding the ESLint configuration
+Aplicacao Vite usada como documentacao, playground e vitrine do DS.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+`dist/`
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Artefatos compilados do pacote NPM, incluindo bundle da library, tipos, `tokens`, `tailwind preset` e CSS.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+`dist-docs/`
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Build estatico da documentacao para deploy na Vercel.
+
+## Scripts
+
+`npm run dev`
+
+Sobe a app de documentacao localmente.
+
+`npm run build`
+
+Atalho para `npm run build:lib`. Gera o pacote publicavel em `dist/`.
+
+`npm run build:lib`
+
+Empacota a library, gera declaracoes TypeScript, compila os subpath exports e copia os CSS publicos para `dist/`.
+
+`npm run build:docs`
+
+Gera a documentacao estaticamente em `dist-docs/`.
+
+`npm run lint`
+
+Executa o ESLint no repo.
+
+`npm run preview`
+
+Abre um preview da documentacao buildada.
+
+## Consumo da library
+
+### Componentes e estilos
+
+```tsx
+import "@rankmyapp/ds/styles";
+import { Button, ThemeProvider } from "@rankmyapp/ds";
+
+export function App() {
+  return (
+    <ThemeProvider initialProduct="rankmyapp" defaultMode="light">
+      <Button>Salvar</Button>
+    </ThemeProvider>
+  );
+}
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Tokens
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```ts
+import { productThemes, semanticThemeTokens } from "@rankmyapp/ds/tokens";
 ```
+
+### Tailwind preset
+
+```ts
+import { tailwindPreset } from "@rankmyapp/ds/tailwind";
+
+export default {
+  presets: [tailwindPreset],
+  content: ["./src/**/*.{ts,tsx}"],
+};
+```
+
+## Theming
+
+O DS usa CSS variables como contrato principal de design tokens.
+
+- `src/theme/product-themes.ts` concentra os produtos suportados e seus metadados
+- `src/theme/token-contract.ts` define o contrato semantico compartilhado pelo CSS e pelo Tailwind
+- `src/styles/themes.css` contem os valores reais por produto e por modo
+
+Produtos suportados hoje:
+
+- `rankmyapp`
+- `mi-tool`
+- `portal`
+
+O `ThemeProvider` nao persiste estado por padrao. Se um app consumidor quiser lembrar `product` e `mode` no navegador, ele precisa ativar isso explicitamente:
+
+```tsx
+<ThemeProvider persist initialProduct="mi-tool" defaultMode="dark">
+  <App />
+</ThemeProvider>
+```
+
+Isso evita que preferencias antigas vazem entre apps diferentes que usam a mesma library.
+
+## Publicacao
+
+Os entrypoints publicados hoje sao:
+
+- `@rankmyapp/ds`
+- `@rankmyapp/ds/styles`
+- `@rankmyapp/ds/tokens`
+- `@rankmyapp/ds/tailwind`
+
+Todos apontam para artefatos compilados em `dist/`.
+
+## Deploy da docs
+
+O deploy da documentacao usa a Vercel com:
+
+- `installCommand`: `npm install`
+- `buildCommand`: `npm run build:docs`
+- `outputDirectory`: `dist-docs`
+
+Essa configuracao ja esta refletida em `vercel.json`.

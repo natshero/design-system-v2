@@ -1,9 +1,11 @@
-import i18n from 'i18next'
+import i18next from 'i18next'
 import { initReactI18next, useTranslation } from 'react-i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
 import { ptBR } from './resources/pt-BR'
 import { enUS } from './resources/en-US'
 import { esES } from './resources/es-ES'
+
+const i18n = i18next.createInstance()
 
 i18n
   .use(LanguageDetector)
@@ -43,7 +45,7 @@ export { i18n }
  * i18n.changeLanguage('en-US')
  */
 export function useDSTranslation() {
-  return useTranslation('ds')
+  return useTranslation('ds', { i18n })
 }
 
 /** Idiomas suportados com labels para o seletor */

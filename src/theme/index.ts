@@ -1,8 +1,14 @@
-export { DSThemeProvider, useTheme } from './ThemeProvider'
+export { DSThemeProvider, useTheme } from "./ThemeProvider";
 export {
-  applyTheme, removeTheme, setThemeMode,
-  getCurrentMode, getSavedTheme, getDefaultMode, getSystemMode,
+  applyTheme,
+  removeTheme,
+  setThemeMode,
+  getCurrentMode,
+  getSavedTheme,
+  getDefaultMode,
+  getSystemMode,
   DARK_FIRST_PRODUCTS,
   type ProductId,
   type ThemeMode,
-} from './utils'
+} from "./utils";
+export { PRODUCT_THEMES } from "./product-themes";
