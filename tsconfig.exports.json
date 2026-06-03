@@ -19,6 +19,6 @@
     "noEmit": false,
     "outDir": "./dist"
   },
-  "include": ["src/tokens.ts", "src/tailwind.preset.ts"],
+  "include": ["src/tokens.ts"],
   "exclude": ["node_modules"]
 }
