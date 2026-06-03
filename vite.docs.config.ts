@@ -11,6 +11,9 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "./src"),
       "@docs": path.resolve(__dirname, "./docs/src"),
+      "@rankmyapp/ds/theme": path.resolve(__dirname, "./src/theme/index.ts"),
+      "@rankmyapp/ds/styles": path.resolve(__dirname, "./src/index.css"),
+      "@rankmyapp/ds": path.resolve(__dirname, "./src/index.ts"),
     },
   },
   build: {

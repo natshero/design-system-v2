@@ -20,7 +20,10 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@docs/*": ["./docs/src/*"]
+      "@docs/*": ["./docs/src/*"],
+      "@rankmyapp/ds": ["./src/index.ts"],
+      "@rankmyapp/ds/theme": ["./src/theme/index.ts"],
+      "@rankmyapp/ds/*": ["./src/*"]
     }
   },
   "include": ["docs/src", "src"]
